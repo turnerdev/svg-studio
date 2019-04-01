@@ -1,0 +1,47 @@
+@import "variables";
+
+:host {
+    display: block;
+    // background-color: $light-0;
+    color: $dark-0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+:host(:not(:first-child)) {
+    margin-top: 2px;
+}
+
+:host .icon {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color: #22222E;
+    height: 4vmin;
+    width: 4vmin;
+    // font-weight: bold;
+    color: #111111;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px black;
+
+    &[data-icon="M"] { color: $red-dark; }
+    &[data-icon="m"] { color: $red-light; }
+    &[data-icon="V"] { color: $pink-dark; }
+    &[data-icon="v"] { color: $pink-light; }
+    &[data-icon="H"] { color: $cyan-dark; }
+    &[data-icon="h"] { color: $cyan-light; }
+    &[data-icon="Z"] { color: $green-light; }
+}
+
+:host .arg {
+    align-items: center;
+    background-color: #CCCCFF33;
+    color: #EEE;
+    display: flex;
+    flex: 1;
+    height: 4vmin;
+    margin-left: 2px;
+    padding-left: 1vmin;
+}

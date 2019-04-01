@@ -1,0 +1,14 @@
+@import "variables";
+
+body,
+html {
+    height: 100%;
+    font-family: $font-face;
+    overflow: hidden;
+    user-select: none;
+}
+
+path {
+    stroke: black;
+    stroke-width: 3px;
+}
