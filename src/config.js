@@ -1,6 +1,6 @@
 export default {
     sidebar: {
-        width: '30vw',
+        width: '20rem',
         theme: 'dark'
     },
     canvas: {
