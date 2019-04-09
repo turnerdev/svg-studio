@@ -17,8 +17,8 @@ const featherIconSVGContent = (icon) => {
  */
 export const AppIcon = {
   glyph: '',
-  width: 'auto',
-  height: 'auto',
+  width: '20',
+  height: '20',
   render: ({ glyph, width, height }) => html`
     <svg width='${width}'
         height='${height}'
