@@ -1,60 +1,55 @@
-import { Vector2 } from './vector2.js';
+import { fromJS } from 'immutable';
+
+const argsize = (command) => {
+    if (~'MmVvLlHh'.indexOf(command)) {
+        return 1;
+    } else if (~'Cc'.indexOf(command)) {
+        return 3;
+    }  else if (~'Ss'.indexOf(command)) {
+        return 2;
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * Chunks an array by a given size
+ * @param {Array} a Arr
+ * @param {number} n 
+ */
+function chunk(a, n) { 
+    if (a.length === 0) { return []; }
+    else { return [a.slice(0, n)].concat(chunk(a.slice(n), n)); }
+}
 
 /**
  * Return a Path object from the shape of the path
+ * @constructor
  * @param {string} d Shape of the path
  */
-export const Path = function(d, name) {
-    if (!this) {
-      return new Path(d, name);
-    }
-    this.visible = true;
-    this.name = name;
+export const Path = (d, name) => {
+    return fromJS({
+        visible: true,
+        name: name,
+        d: d.match(/[a-zA-Z]([^a-zA-Z]*)/g).map(x => ({
+            command: x[0],
 
-    // Define 'd' value as {command: String, args: Number[][]}
-    this.d = d.match(/[a-zA-Z]([^a-zA-Z]*)/g)
-              .map(x => ({
-                command: x[0],
-                args: x.substr(1)      // Taje 
-                       .split(',')     // Split pairs
-                       .map(pair => pair.split(' ')      // Split on whitespace
-                                        .map(Number)     // Parse to Numbers
-                                        .filter(e => e)) // Strip NaNs
-              }));
+                  // String => [[String]]
+                  // "1,2, 3,4 10,4 2,4" => [["1,2","3,4"], ["10,4","2,4"]]
+            args: chunk(x.substr(1).split(' ').filter(e => e), argsize(x[0])) 
 
-    return this;
+                  // [[String]] => [[[Number, Number]]]
+                  // [["1,2","3,4"], ["10,4","2,4"]] => [[[1,2],[3,4]], [[10,4],[2,4]]
+                  .map(buffer => buffer.map(tuple => tuple.split(',').map(Number))) 
+        }))
+    });
 }
 
 /**
- * Convert a Path to the shape the shape of a path from a Path object
- * @param {Path} path Path
+ * Convert an immutable path object to a 'd' string
+ * @param {Immutable} path Path
+ * @return {string}
  */
-Path.prototype.getShape = function() {
-    // return this.d.map(c => c.command + (c.args.map(arg => arg.join(' '))).join(',')).join(' ');
-    return this.d.map(c => c.command + c.args.map(arg => arg.join(' ')).join(',')).join(' ')
-}
-
-// Get last element
-const last = function(a) {
-    return a[a.length-1].clone();
-}
-
-Path.prototype.getPoints = function() {
-    return this.d.reduce((a, c) => {
-        switch (c.command) {
-            // Move the current point to the coordinate x,y.
-            // Any subsequent coordinate pair(s) are interpreted as parameter(s) for implicit
-            // absolute LineTo (L) command(s) (see below). Formula: Pn = {x, y}
-            case 'M': return a.concat(c.args.map(arg => {
-                if (a.length === 0) {
-                    return Vector2(...arg);
-                } else {
-                    return last(a).add(Vector2(...arg));
-                }
-            }));
-            case 'h': return a.concat(last(a).add(Vector2(c.args[0][0], 0)));
-            case 'v': return a.concat(last(a).add(Vector2(0, c.args[0][0])));
-            case 'Z': return a;
-        }
-    }, []);
+export const getShape = (path) => {
+    return path.toJS().d.map(c => c.command + c.args.map(arg => arg.join(','))).join(' ');
 }
