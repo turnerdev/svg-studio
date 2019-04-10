@@ -1,0 +1,40 @@
+@import "variables";
+
+:host {
+    background-color: red;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+ul {
+    display: block;
+    list-style: none;
+    background-color: $dark-2;
+    color: $light-0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    li {
+        z-index: 20;
+        display: inline-block;
+        padding: 1rem 2rem;
+        position: relative;
+        font-size: 1.4rem;
+        border-right: 1px solid $dark-0;
+        &:not(.active) {
+            cursor: pointer;
+        }
+        &.active {
+            background-color: $light-0;
+            color: $dark-0;
+        }
+    }
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    display: block;
+    background-color: $light-0;
+}
