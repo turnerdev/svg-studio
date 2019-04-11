@@ -4,25 +4,30 @@ import { AppPanel } from './app-panel.js'
 
 import styles from './app-tabset.scss';
 
+const select = (host, tab) => {
+  host.tabs.filter(t => t.active).forEach(t => t.active = false);
+  tab.active = true;
+};
+
 const AppTab = Object.assign(AppPanel, {
-  render: ({ active }) => active && html`
+  render: ({ active }) => !active ? html`<div/>` : html`
     <div class='body'>
       <slot></slot>
-    </div>
+    </div> 
   `
 });
 
 const AppTabset = {
-  active: ({tabs}) => tabs.filter(tab => tab.active),
+  active: ({ tabs }) => tabs.filter(tab => tab.active),
   tabs: children(AppTab),
   render: ({ active, tabs }) => html`
     <ul>
       ${tabs.map((tab) => html`
-        <li class='${ tab.active && 'active'}' onclick='${() => { active.forEach(a => a.active = false); tab.active = true } }'>${tab.title}</li>
+        <li class='${~active.indexOf(tab) && 'active'}' onclick='${host => select(host, tab)}'>${tab.title}</li>
       `)}
     </ul>
     <main>
-        <slot></slot>
+      <slot></slot>
     </main>
   `.style(styles)
 };
