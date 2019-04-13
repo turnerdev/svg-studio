@@ -11,8 +11,51 @@
     box-shadow: 0 0 2vmin rgba(0,0,0,0.2);
     position: relative;
     z-index: 10;
+    background-size: 25px 25px;
+    background-image: linear-gradient(to right, #DDD 1px, transparent 1px), linear-gradient(to bottom, #DDD 1px, transparent 1px);
+}
+
+:host .logs {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    p {
+        opacity: 0.1;
+        &:nth-child(1) { opacity: 0.9; }
+        &:nth-child(2) { opacity: 0.8; }
+        &:nth-child(3) { opacity: 0.7; }
+        &:nth-child(4) { opacity: 0.6; }
+        &:nth-child(5) { opacity: 0.5; }
+        &:nth-child(6) { opacity: 0.4; }
+        &:nth-child(7) { opacity: 0.3; }
+        margin: 0;
+    }
 }
 
 :host([data-theme="dark"]) {
     background-color: $dark-0;
+}
+
+//
+:host .xy-point {
+    fill: yellow;
+}
+
+:host svg g.handles {
+    circle {
+        stroke-width: 3px;
+        stroke: red;
+        fill: transparent;
+    }
+    line {
+        stroke: blue;
+        stroke-width: 2px;
+        stroke-linecap: round;
+        stroke-dasharray: 3;
+    }
+}
+
+pre {
+    white-space: pre-line;
+    margin: 20px;
 }

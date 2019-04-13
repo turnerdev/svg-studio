@@ -27,8 +27,10 @@ function chunk(a, n) {
  * @constructor
  * @param {string} d Shape of the path
  */
-export const Path = (d, name) => {
+export const Path = (x, y, d, name) => {
     return fromJS({
+        x: x,
+        y: y,
         visible: true,
         name: name,
         d: d.match(/[a-zA-Z]([^a-zA-Z]*)/g).map(x => ({

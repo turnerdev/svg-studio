@@ -20,6 +20,7 @@ $padding: 0.75rem;
     padding: $padding;
     text-shadow: 1px 1px 0 #000000dd;
     position: relative;
+    
     .icon {
         position: absolute;
         top: $padding;
@@ -32,15 +33,19 @@ $padding: 0.75rem;
 }
 
 :host .body {
-    padding: $padding;
+    padding: $padding/2;
     &:first-child {
         padding-top: $padding;
+    }
+    ::slotted(app-panel) {
+        overflow-y: scroll;
     }
 }
 
 :host([theme="dark"]) {
     color: $light-0;
     background-color: $dark-0;
+    overflow: hidden;
 
     ::slotted(app-panel) {
         background-color: $dark-1;

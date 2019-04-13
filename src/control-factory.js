@@ -261,7 +261,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
       case 'c': // (dx1,dy1, dx2,dy2, dx,dy)+
         abs = Vector2(...arg.get(0).toArray()).add(previous.position);
 
-        return nextControl(previous, abs, ControlCubic(previous.position, arg, [
+        var absArgs = arg.reduce((a, c) => {
+          return [...a, List([a.getIn([-1,0])-c.get(0), a.getIn([-1,1]-c.get(1))]) ];
+        }, List([List([0,0])]));
+
+        return nextControl(previous, abs, ControlCubic(previous.position, absArgs, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([pi, 'd', di, 'args', ai, 0], List(pos.subtract(previous.position).getValue()));

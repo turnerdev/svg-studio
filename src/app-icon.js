@@ -1,7 +1,8 @@
 import { html, svg, define } from 'hybrids';
-import style from './app-icon.scss';
 
-import feather from 'feather-icons';
+import * as feather from 'feather-icons';
+
+import style from './app-icon.scss';
 
 /**
  * Generates SVG content for the specified feather icon

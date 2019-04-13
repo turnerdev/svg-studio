@@ -13,11 +13,13 @@ function toggleState(host) {
 }
 
 export const AppPanel = {
+  active: false, // boolean
   collapsed: false,
   icon: '',
+  name: '',
   title: '',
   width: '',
-  render: ({ title, width, icon, collapsed }) => html`
+  render: ({ title, width, icon, collapsed }) =>  html`
     <style>
       :host {
         ${width ? 'width: ' + width + ';' : 'flex: 1;' }

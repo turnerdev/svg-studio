@@ -8,10 +8,13 @@ export const AppControl = {
   render: ({ args, icon }) => html`
     ${icon && html`
       <div class='icon' data-icon='${icon}'>${icon}</div>
-      ${args.map(arg => html`
-        <div class='arg'>
-          ${arg}
-        </div>
+      <slot></slot>
+      ${args.map(arg => arg && html`
+        ${arg.map(val => html`
+          <div class='arg'>
+            ${val}
+          </div>
+        `)}
       `)}
     `}
   `.style(styles),

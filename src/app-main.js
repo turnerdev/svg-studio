@@ -1,120 +1,31 @@
-import { html, define, svg } from 'hybrids';
+import { fromJS } from 'immutable';
+import { html, define, property, svg } from 'hybrids';
 // import "babel-polyfill"
 
 import './app-panel.js';
 import './app-control.js';
 import './app-canvas.js';
+import './app-tabset.js';
 
 import config from './config.js';
 
 import styles from './app-main.scss';
 
-import { Vector2 } from './vector2.js';
+import { ControlFactory } from './control-factory.js';
+import { Path, getShape } from './path.js';
 
-/**
- * Return a Path object from the shape of the path
- * @param {string} d Shape of the path
- */
-const Path = function(d) {
-  if (!this) {
-    return new Path(d);
-  }
-  this.d = d.match(/[a-zA-Z]([^a-zA-Z]*)/g)
-            .map(x => ({
-              op: x[0],
-              args: x.substr(1).split(' ').map(Number).filter(e => e)
-            }));
-  return this;
-}
-
-/**
- * Convert a Path to the shape the shape of a path from a Path object
- * @param {Path} path Path
- */
-Path.prototype.getShape = function() {
-  return this.d.map(c => c.op + c.args.join(' ')).join(' ');
-}
-
-// function path(d) {
-//   return svg`<path d='${d}' />`
-// }
-
-// function* genPoints(d) {
-//   // let last = [0, 0];
-//   d.forEach(p => {
-//     // last = 
-//     yield last;
-//   });
-// }
-// function getPoints() {
-//   let res = [];
-//   for (var p of genPoints()) {
-//     res.push(p);
-//   }
-//   return res;
-// }
-
+//   <g transform="translate(${path.get('x')}, ${path.get('y')})")>  </g>
 const SVGPath = (path) => svg`
-  <path d='${path.getShape()}' fill='transparent' stroke='black' />
+  <path d='${getShape(path)}' fill='transparent' stroke='black' />
 `;
-const SVGElement = SVGPath;
-
-// // Is this a relative operation
-// const isRelative = op => op == op.toLowerCase();
-
-const SVGHandles = path => path.d.reduce((a, c) => {
-  // current position
-  const current = a[a.length-1];
-
-  switch (c.op) {
-    // Move the current point to the coordinate x,y.
-    // Any subsequent coordinate pair(s) are interpreted as parameter(s) for implicit
-    // absolute LineTo (L) command(s) (see below). Formula: Pn = {x, y}
-    case 'M': return a.concat(Vector2(c.args[0], c.args[1]));
-
-    case 'v': return a.concat(current && current.clone().add(Vector2(0, c.args[0])));
-    case 'h': return a.concat(current && current.clone().add(Vector2(c.args[0], 0)));
-    case 'Z': return a;
-  }
-}, []);
-
-
-/**
- * 
- * @param {hybrids} host 
- * @param {MouseEvent} event 
- */
-const onMousedown = (host, event) => {
-  host.selectedPoint = event.target.dataset.key;
-}
-
-const Point = (key, x, y) => svg`
-  <circle
-    class='ad-Point'
-    data-key='${key}'
-    onmousedown='${onMousedown}'
-    fill='transparent'
-    stroke='black'
-    stroke-width='4'
-    cx='${x}'
-    cy='${y}' 
-    r='${5}' />`.key(key);
 
 /**
  * Document mousemove event
  * @param {MouseEvent} event host.item
  */
 const documentMousemove = (host, event) => {
-  if (host.selectedPoint >= 0) {
-    host.items = [host.items.map((item, i) => {
-      if (i === host.selectedPoint) {
-        return {
-          op: item.op,
-          args: [event.layerX, event.layerY]
-        };
-      }
-      return item;
-    })];
+  if (host.drag) {
+    host.drag(host, event);
   }
 };
 
@@ -123,21 +34,24 @@ const documentMousemove = (host, event) => {
  * @param {MouseEvent} event 
  */
 const documentMouseup = (host) => {
-  if (host.selectedPoint >=0 ) {
-    host.selectedPoint = -1;
+  if (host.drag) {
+    host.drag = null;
   }
 }
 
-
-const testpath = Path('M 1 1,20 20 v 350 h 200 Z');
-
 export const AppMain = {
   config: config,
-  items: [testpath],
-  points: {
-    get: (host) => host.items.map(SVGHandles)
-  },
-  selectedPoint: -1,
+  logs: ['this','is','a','test'],
+  paths: property(fromJS([
+    // Path('M1,1 50,90 100,100 Z', 'Demo path'),
+    // Path(250, 250, 'M 10,10 h 10 m  0,10 h 10 m  0,10 h 10 M 40,20 h 10 m  0,10 h 10 m  0,10 h 10 m  0,10 h 10 M 50,50 h 10 m-20,10 h 10 m-20,10 h 10 m-20,10 h 10', 'Relative M'),
+    Path(0, 0, 'M 10,90 C 30,90 25,10 50,10 S 70,90 90,90', 'Cubic Bézier Curve'),
+    Path(0, 0, 'M 110,90 c 20,0 15,-80 40,-80 s 20,80 40,80', 'Relative Cubic Bézier Curve')
+    // Path('M1,1 50,90 100,100 v 50 h 50 V 350 H450 Z', 'Test path')
+    // Cubic Bézier curve with absolute coordinates
+    // Path('M 10,90 C 30,90 25,10 50,10 S 70,90 90,90', 'Beizier path')
+  ])),
+  drag: undefined,
   init: {
     connect: host => {
       // Add document-level event listeners
@@ -150,31 +64,65 @@ export const AppMain = {
       }
     }
   },
-  render: ({ config, items, points }) => html`
+  render: ({ config, logs, paths }) => html`
     <app-panel theme='${config.sidebar.theme}' width='${config.sidebar.width}'>
 
+      <!-- Config panel -->
       <app-panel theme='${config.sidebar.theme}' title='Config' icon='settings'>
-        ${items.map(path => path.d.map(item => html`<app-control icon='${item.op}' args='${item.args}'>${item.args.join(' ')}</app-control>`))}
+        ${Object.keys(config.settings).map(key => html`
+          <app-control icon='S'>${key}</app-control>
+        `)}
       </app-panel>
 
+      <!-- Layers panel -->
       <app-panel theme='${config.sidebar.theme}' title='Layers' icon='layers'>
-        ${items.map(path => path.d.map(item => html`<app-control icon='${item.op}' args='${item.args}'>${item.args.join(' ')}</app-control>`))}
+        ${paths.map((path, i) => html`
+          <app-control icon='${i+1}'>
+            <span>${path.get('name')}</span>
+          </app-control>
+        `).toJS().flat()}
       </app-panel>
 
+      <!-- Path panel -->
       <app-panel theme='${config.sidebar.theme}' title='Path' icon='share-2'>
-        ${items.map(path => path.d.map(item => html`<app-control icon='${item.op}'>${item.args.join(' ')}</app-control>`))}
+        ${paths.map(path => path.get('d').map(item => html`
+          <app-control icon='${item.get('command')}' args='${item.get('args').toJS()}'/>
+        `)).toJS().flat()}
       </app-panel>
- 
+
     </app-panel> 
-  
-    <app-panel>
-      <app-canvas>
-        <svg width='${config.canvas.width}' height='${config.canvas.height}'>
-          ${items.map(SVGElement)}
-          ${points.map((p, i) => Point(i, p.x, p.y))}
-        </svg>
-      <app-canvas>
-    </app-panel>
+
+    <app-tabset>
+
+      <app-tab title='Design' active='${true}' icon='x'>
+        <app-canvas>
+          <svg width='${config.canvas.width}' height='${config.canvas.height}'>
+            ${paths.map(SVGPath).toArray()}
+            ${paths.map(ControlFactory).toArray().flat()}
+          </svg>
+        <app-canvas>
+        <div class='logs'>
+        ${logs.map(m => html`<p>${m}</p>`)}
+      </div>
+      </app-tab>
+
+      <app-tab title='Render' active='${false}' icon='x'>
+      
+      </app-tab>
+
+      <app-tab title='Markup' active='${false}' icon='x'>
+        <pre>
+          ${(() => { 
+            return paths.map(SVGPath).toArray().map(x => {
+              let fragment = document.createElement('svg');
+              x({}, fragment);
+              return fragment.outerHTML;
+            }).join('\n');
+          })()}
+        </pre>white
+      </app-tab>
+
+    </app-tabset>
   `.style(styles),
 };
 
