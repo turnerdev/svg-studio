@@ -1,12 +1,14 @@
 import { fromJS } from 'immutable';
 
 const argsize = (command) => {
-    if (~'MmVvLlHh'.indexOf(command)) {
+    if (~'MmVvLlHhTt'.indexOf(command)) {
         return 1;
     } else if (~'Cc'.indexOf(command)) {
         return 3;
-    }  else if (~'Ss'.indexOf(command)) {
+    }  else if (~'SsQq'.indexOf(command)) {
         return 2;
+    } else if (~'Aa'.indexOf(command)) {
+        return 6;
     } else {
         return 0;
     }

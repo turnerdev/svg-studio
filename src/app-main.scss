@@ -45,13 +45,16 @@
     circle {
         stroke-width: 3px;
         stroke: red;
-        fill: transparent;
+        z-index: 20;
     }
     line {
         stroke: blue;
         stroke-width: 2px;
         stroke-linecap: round;
         stroke-dasharray: 3;
+    }
+    .tmp {
+        fill: rgba(0,0,70,0.5);
     }
 }
 

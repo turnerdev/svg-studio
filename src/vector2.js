@@ -122,6 +122,17 @@ Vector2.prototype.dot = function(vector) {
 };
 
 /**
+ * Returns the distance between two points
+ * @param {Vector2} vector
+ * @return {Number} distance between the two points
+ */
+Vector2.prototype.distance = function(vector) {
+    const a = this.x - vector.x;
+    const b = this.y - vector.y;
+    return Math.sqrt(a*a + b*b);
+}
+
+/**
  * Returns the value as a float tuple
  * @return {float[]}
  */
