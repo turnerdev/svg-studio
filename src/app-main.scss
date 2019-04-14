@@ -72,3 +72,14 @@ pre {
     white-space: pre-line;
     margin: 20px;
 }
+
+.logo {
+    text-align: center;
+    padding: 1rem;
+    font-size: 2rem;
+    color: $light-0;
+    text-shadow: 0 0 6px rgba(0,0,0,1);
+    span {
+        color: $blue-light;
+    }
+}

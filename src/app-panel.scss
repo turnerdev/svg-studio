@@ -7,7 +7,6 @@ $padding: 0.75rem;
     color: $dark-0;
     display: block;
     position: relative;
-    margin-bottom: $padding;
 }
 
 :host .header {
@@ -20,7 +19,6 @@ $padding: 0.75rem;
     padding: $padding;
     text-shadow: 1px 1px 0 #000000dd;
     position: relative;
-    
     .icon {
         position: absolute;
         top: $padding;
@@ -34,11 +32,16 @@ $padding: 0.75rem;
 
 :host .body {
     padding: $padding/2;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+    // overflow-y: scroll;
+    &.active {
+        flex: 1;
+    }
     &:first-child {
         padding-top: $padding;
-    }
-    ::slotted(app-panel) {
-        overflow-y: scroll;
     }
 }
 

@@ -22,7 +22,8 @@ export const AppPanel = {
   render: ({ title, width, icon, collapsed }) =>  html`
     <style>
       :host {
-        ${width ? 'width: ' + width + ';' : 'flex: 1;' }
+        ${width && 'width: ' + width + ';' }
+        ${title && !collapsed && 'flex: 1;' }
       }
     </style>
     ${title && html`

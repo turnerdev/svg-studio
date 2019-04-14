@@ -5,7 +5,7 @@ export default {
         other: false
     },
     sidebar: {
-        width: '20rem',
+        width: '30rem',
         theme: 'dark'
     },
     canvas: {

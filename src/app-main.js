@@ -48,8 +48,9 @@ export const AppMain = {
     // Path(0, 0, 'M 110,90 c 20,0 15,-80 40,-80 s 20,80 40,80', 'Relative Cubic Bézier Curve'),
     // Path(0, 0, 'M 10,50 Q 25,25 40,50 T 70,50 100,50 130,50 160,50 190,50', 'Quadratic Bézier Curve'),
     // Path(0, 0, 'M 250,50 q 15,25 30,0 t 30,0 30,0 30,0 30,0 30,0', 'R. Quadratic Bézier Curve'),
-    // Path(0, 0, 'M 6,10 A 6 4 10 1 0 14,10', 'Elliptical Arc Curve') 
-    Path(0, 0, 'M 300,300 A 6 4 10 1 0 100,100 6 4 10 1 0 400,400', 'R. Elliptical Arc Curve') 
+    // Path(0, 0, 'M 6,10 A 6 4 10 1 0 14,10', 'Elliptical Arc Curve'),
+    // Path(0, 0, 'M 300,300 A 6 4 10 1 0 100,100 6 4 10 1 0 400,400', 'R. Elliptical Arc Curve') 
+    Path(0, 0, 'M 10,30 A 20,20 0,0,1 50,30 A 20,20 0,0,1 90,30 Q 90,60 50,90 Q 10,60 10,30 z', 'Heart')
     // TODO relative cubi
     // Path('M1,1 50,90 100,100 v 50 h 50 V 350 H450 Z', 'Test path')
     // Cubic Bézier curve with absolute coordinates
@@ -70,6 +71,10 @@ export const AppMain = {
   },
   render: ({ config, paths }) => html`
     <app-panel theme='${config.sidebar.theme}' width='${config.sidebar.width}'>
+
+      <div class='logo'>
+        <span>svg</span>stud.io
+      </div>
 
       <!-- Config panel -->
       <app-panel theme='${config.sidebar.theme}' title='Config' icon='settings'>
