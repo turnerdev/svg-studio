@@ -124,12 +124,21 @@ Vector2.prototype.dot = function(vector) {
 /**
  * Returns the distance between two points
  * @param {Vector2} vector
- * @return {Number} distance between the two points
+ * @return {Number} Distance between the two points
  */
 Vector2.prototype.distance = function(vector) {
     const a = this.x - vector.x;
     const b = this.y - vector.y;
     return Math.sqrt(a*a + b*b);
+}
+
+/**
+ * Returns the angle between two points in degrees
+ * @param {Vector2} vector
+ * @return {Number} Angle in degrees between two points
+ */
+Vector2.prototype.getAngle = function(vector) {
+    return Math.atan2(vector.y - this.y, vector.x - this.x) * 180 / Math.PI;
 }
 
 /**

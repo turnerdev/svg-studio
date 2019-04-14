@@ -364,8 +364,8 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
             host.paths = host.paths.setIn([...base, 1, 0], pos.y);
           },
           angle: (host, event) => {
-            const distance = SVGCoords(host, event).distance(current.position);
-            host.paths = host.paths.setIn([...base, 2, 0], distance);
+            const angle = (current.position.getAngle(SVGCoords(host, event))+450)%360;
+            host.paths = host.paths.setIn([...base, 2, 0], angle);
           },
           largeArc: (host) => {
             host.paths = host.paths.updateIn([...base, 3, 0], b => b^1);
@@ -426,20 +426,26 @@ const ControlCubic = (pos, arg, handlers) => svg`
 const ControlArc = (pos, arg, handlers) => svg`
   <g class='handles'>  
     
-    <path d='${Utils.describeArc(pos.x, pos.y, 0, 50, 0, Math.max(45, arg.getIn([2,0])))}'
-      onmousedown='${host => host.drag = handlers.angle}' class='tmp'/>        
+    <!-- Angle control -->
+    <path d='${Utils.describeArc(pos.x, pos.y, 13, 14, 0, 359.99)}'
+      class='outer' onmousedown='${host => host.drag = handlers.angle}' />  
+    <path d='${Utils.describeArc(pos.x, pos.y, 15, 10, 0, arg.getIn([2,0]))}'
+      class='inner' onmousedown='${host => host.drag = handlers.angle}' />              
     
+    <!-- Radius-X, Radius-Y controls -->
     <circle cx='${arg.getIn([0,0])+pos.x}' cy='${arg.getIn([1,0])+pos.y}' r='${5}'
       onmousedown='${host => host.drag = handlers.rxry}'/>
+    <line x1='${arg.getIn([0,0])+pos.x}' y1='${arg.getIn([1,0])+pos.y}'
+      x2='${pos.x}' y2='${pos.y}' />
     
-    <line x1='${arg.getIn([0,0])+pos.x}' y1='${arg.getIn([1,0])+pos.y}' x2='${pos.x}' y2='${pos.y}' />
+    <!-- Flags -->
+    <circle cx='${pos.x+15}' cy='${pos.y}' r='${5}'
+      onclick='${handlers.largeArc}' class="${arg.getIn([3,0]) ? 'active' : 'a'}"/>
     
-    <circle cx='${arg.getIn([-1,0])+15}' cy='${arg.getIn([-1,1])}' r='${5}'
-      onclick='${handlers.largeArc}'/>
-    
-    <circle cx='${arg.getIn([-1,0])+30}' cy='${arg.getIn([-1,1])}' r='${5}'
-      onclick='${handlers.sweep}'/>
-    
+    <circle cx='${pos.x+30}' cy='${pos.y}' r='${5}'
+      onclick='${handlers.sweep}' class="${arg.getIn([4,0]) ? 'active' : 'a'}"/>
+
+    <!-- End point -->
     <circle cx='${arg.getIn([5,0])}' cy='${arg.getIn([5,1])}' r='${5}'
       onmousedown='${host => host.drag = handlers.end}'/>  
   

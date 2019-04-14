@@ -43,18 +43,28 @@
 
 :host svg g.handles {
     circle {
+        stroke: $red-dark;
         stroke-width: 3px;
-        stroke: red;
-        z-index: 20;
+        fill: $red-dark;
+    }
+    circle.active {
+        fill: white;
     }
     line {
-        stroke: blue;
+        stroke: $blue-light;
         stroke-width: 2px;
         stroke-linecap: round;
         stroke-dasharray: 3;
     }
-    .tmp {
+    path.outer {
         fill: rgba(0,0,70,0.5);
+        stroke: none;
+    }
+    path.inner {
+        fill: $yellow-dark;
+    }
+    .toggle {
+        fill: white;
     }
 }
 
