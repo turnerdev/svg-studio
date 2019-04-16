@@ -21,7 +21,7 @@ ul {
         display: inline-block;
         padding: 1rem 2rem;
         position: relative;
-        font-size: 1.4rem;
+        font-size: 1.8rem;
         border-right: 1px solid $dark-0;
         &:not(.active) {
             cursor: pointer;
@@ -33,9 +33,16 @@ ul {
     }
 }
 
+.body {
+    position: relative;
+    background-color: yellow;
+}
+
 main {
     flex: 1;
     width: 100%;
     display: block;
     background-color: $light-0;
+    overflow: hidden;
+    position: relative;
 }

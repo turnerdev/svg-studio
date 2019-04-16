@@ -8,27 +8,28 @@ import styles from './app-panel.scss';
  * Toggle the collapsed state of the component
  * @param {Boolean} host 
  */
-function toggleState(host) {
+const toggleState = host => {
   host.collapsed = !host.collapsed;
 }
 
 export const AppPanel = {
-  active: false, // boolean
+  active: false,
   collapsed: false,
   icon: '',
-  name: '',
   title: '',
   width: '',
-  render: ({ title, width, icon, collapsed }) =>  html`
+  render: ({ title, icon, width, collapsed }) =>  html`
     <style>
       :host {
         ${width && 'width: ' + width + ';' }
-        ${title && !collapsed && 'flex: 1;' }
+        ${title && !collapsed && 'flex: 1'}
       }
     </style>
     ${title && html`
       <div class='header' onclick='${toggleState}'>
-        <app-icon glyph='${icon}' class='icon'></app-icon>
+        <div class='icon'>
+          <app-icon glyph='${icon}' />
+        </div>
         <span>${title}</span>
       </div>
     `}

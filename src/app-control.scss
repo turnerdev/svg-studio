@@ -1,15 +1,15 @@
 @import "variables";
 
 :host {
-    display: block;
-    // background-color: $light-0;
-    color: $dark-0;
-    position: relative;
-    display: flex;
     align-items: center;
     align-content: center;
+    color: $dark-0;
+    display: flex;
+    position: relative;
     max-width: 100%;
     overflow: hidden;
+    font-size: 1.4rem;
+    color: $light-0;
 }
 
 :host(:not(:first-child)) {
@@ -23,7 +23,6 @@
     background-color: #22222E;
     height: 4vmin;
     width: 4vmin;
-    // font-weight: bold;
     color: #111111;
     font-size: 1.4rem;
     text-shadow: 0 0 10px black;
@@ -48,6 +47,17 @@
     padding-left: 1rem;
 }
 
+:host .toggle {
+    display: flex;
+    padding: 1rem;
+    .switch {
+        background-color: red;
+        display: block;
+        width: 50px;
+        height: 50px;
+    }
+}
+
 ::slotted(span) {
     align-items: center;
     color: $light-2;
@@ -55,6 +65,7 @@
     flex: 1;
     margin-left: 2px;
     padding-left: 1vmin;
-    // background-color: #CCCCCC99;
-    
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: normal;
 }

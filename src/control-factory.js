@@ -403,7 +403,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
 // onmousedown='${(host) => dispatch(host, 'drag', handler.drag )}'
 const controlMoveTo = (x, y, handlers) => svg`
   <g class='handles'>
-    <circle cx='${x}' cy='${y}' r='${5}'
+    <circle cx='${x}' cy='${y}' r='${3}'
       onmousedown='${host => host.drag = handlers.drag}'
     />
   </g>`;
@@ -411,7 +411,7 @@ const controlMoveTo = (x, y, handlers) => svg`
 // Control element for 
 const ControlCubic = (pos, arg, handlers) => svg`
   <g class='handles'>${arg.map((a, i) => svg`
-    <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${5}'
+    <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${3}'
       onmousedown='${host => host.drag = handlers[i]}'/>
       ${i === arg.size-2 && svg`
         <line x1='${a.get(0)}' y1='${a.get(1)}' x2='${arg.getIn([-1,0])}' y2='${arg.getIn([-1,1])}' />
@@ -433,20 +433,20 @@ const ControlArc = (pos, arg, handlers) => svg`
       class='inner' onmousedown='${host => host.drag = handlers.angle}' />              
     
     <!-- Radius-X, Radius-Y controls -->
-    <circle cx='${arg.getIn([0,0])+pos.x}' cy='${arg.getIn([1,0])+pos.y}' r='${5}'
+    <circle cx='${arg.getIn([0,0])+pos.x}' cy='${arg.getIn([1,0])+pos.y}' r='${3}'
       onmousedown='${host => host.drag = handlers.rxry}'/>
     <line x1='${arg.getIn([0,0])+pos.x}' y1='${arg.getIn([1,0])+pos.y}'
       x2='${pos.x}' y2='${pos.y}' />
     
     <!-- Flags -->
-    <circle cx='${pos.x+15}' cy='${pos.y}' r='${5}'
+    <circle cx='${pos.x+15}' cy='${pos.y}' r='${3}'
       onclick='${handlers.largeArc}' class="${arg.getIn([3,0]) ? 'active' : 'a'}"/>
     
-    <circle cx='${pos.x+30}' cy='${pos.y}' r='${5}'
+    <circle cx='${pos.x+30}' cy='${pos.y}' r='${3}'
       onclick='${handlers.sweep}' class="${arg.getIn([4,0]) ? 'active' : 'a'}"/>
 
     <!-- End point -->
-    <circle cx='${arg.getIn([5,0])}' cy='${arg.getIn([5,1])}' r='${5}'
+    <circle cx='${arg.getIn([5,0])}' cy='${arg.getIn([5,1])}' r='${3}'
       onmousedown='${host => host.drag = handlers.end}'/>  
   
   </g>`;

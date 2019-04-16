@@ -1,11 +1,11 @@
 export default {
     settings: {
         gridlines: true,
-        snap: true,
-        other: false
+        snap: "sdf",
+        other: "34"
     },
     sidebar: {
-        width: '30rem',
+        width: '35rem',
         theme: 'dark'
     },
     canvas: {

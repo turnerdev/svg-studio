@@ -1,10 +1,4 @@
 :host{
     background: transparent;
-}
-:host svg {
-    background: transparent;
-    height: 100%;
-    display: block;
-    stroke: #111;
-    filter: drop-shadow( 1px 1px 0.01rem rgba(255, 255, 255, .25));
+    position: relative;
 }

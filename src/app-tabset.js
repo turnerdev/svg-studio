@@ -11,9 +11,7 @@ const select = (host, tab) => {
 
 const AppTab = Object.assign(AppPanel, {
   render: ({ active }) => !active ? html`<div/>` : html`
-    <div class='body'>
-      <slot></slot>
-    </div> 
+    <slot></slot>
   `
 });
 

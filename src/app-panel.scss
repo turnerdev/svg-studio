@@ -5,38 +5,40 @@ $padding: 0.75rem;
 :host {
     background-color: $light-0;
     color: $dark-0;
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: relative;
 }
 
 :host .header {
-    border-bottom: 2px solid #222;
-    color: #AAA;
+    background-color: rgba(0,0,0,0.2);
+    align-items: center;
+    align-content: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 1.1rem;
-    letter-spacing: 0.3rem;
+    display: flex;
+    font-size: 1.6rem;
+    letter-spacing: 0.2rem;
     text-transform: uppercase;
-    padding: $padding;
-    text-shadow: 1px 1px 0 #000000dd;
     position: relative;
     .icon {
-        position: absolute;
-        top: $padding;
-        left: $padding;
-        bottom: $padding;
+        align-self: stretch;
+        padding: 1rem;
+        top: .2rem;
+        position: relative;
     }
     span {
-        margin-left: 2rem;
+        position: relative;
+        flex: 1;
+        display: block;
     }
 }
 
 :host .body {
-    padding: $padding/2;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     height: 100%;
-    // overflow-y: scroll;
     &.active {
         flex: 1;
     }
@@ -52,5 +54,6 @@ $padding: 0.75rem;
 
     ::slotted(app-panel) {
         background-color: $dark-1;
+        margin: 0 0.5rem 0.5rem 0.5rem;
     }
 }

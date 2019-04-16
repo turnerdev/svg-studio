@@ -20,17 +20,16 @@ export const AppIcon = {
   glyph: '',
   width: '20',
   height: '20',
-  render: ({ glyph, width, height }) => html`
-    <svg width='${width}'
-        height='${height}'
-        viewBox='0 0 24 24'
-        preserveAspectRatio='none'
+  render: ({ width, height, glyph }) => html`
+    <svg viewBox='0 0 24 24'
+        width='${width}' height='${height}'
+        preserveAspectRatio='xMinYMin meet'
         fill='none' stroke='currentColor'
         stroke-width='2' stroke-linecap='round'
         stroke-linejoin='round'
         class='feather feather-${glyph}'>
       ${featherIconSVGContent(glyph)}
-    </svg>  
+    </svg>
   `.style(style)
 }
 

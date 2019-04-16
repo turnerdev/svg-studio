@@ -4,7 +4,9 @@ import styles from './app-canvas.scss';
 
 export const AppCanvas = {
   render: () => html`
-    <slot></slot>
+    <div class='wrapper'>
+      <slot></slot>
+    </div>
   `.style(styles),
 };
 

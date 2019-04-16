@@ -10,4 +10,43 @@
     right: 0;
     top: 0;
 }
+:host([mode="design"]) {
+    background: radial-gradient(ellipse at center, rgba(76,142,196,1) 0%,rgba(10,53,114,1) 100%); 
+    ::slotted(svg) {
+        border: 1px solid $gridline-color;
+        background-color: transparent;
+        background-image: linear-gradient(to right, $gridline-color 1px, transparent 1px), linear-gradient(to bottom, $gridline-color 1px, transparent 1px);
+        background-size: 25px 25px;
+        // box-shadow: 0 0 2vmin rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 10;
+        outline: 1px solid $gridline-color;
+        outline-offset: 1rem;
+    }
+}
+:host([mode="render"]) {
+    background: #f4f2f0;;
+    ::slotted(svg) {
+        background-color: #fafafa;
+        box-shadow: 0 0 2.5rem .3rem rgba(0,0,0,0.1);
+        // box-shadow: 0 0 2vmin rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 10;
 
+        path {
+            stroke-width: 3px;
+        }
+    }
+}
+
+// ::slotted(svg) {
+//     border: 1px solid $gridline-color;
+//     background-color: transparent;
+//     background-image: linear-gradient(to right, $gridline-color 1px, transparent 1px), linear-gradient(to bottom, $gridline-color 1px, transparent 1px);
+//     background-size: 25px 25px;
+//     // box-shadow: 0 0 2vmin rgba(0,0,0,0.2);
+//     position: relative;
+//     z-index: 10;
+//     outline: 1px solid $gridline-color;
+//     outline-offset: 1rem;
+// }
