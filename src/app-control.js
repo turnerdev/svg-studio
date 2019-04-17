@@ -37,8 +37,8 @@ export const AppControl = {
       <div class='icon' data-icon='${icon}'>${icon}</div>
     `}
     ${datatype === 'boolean' && html`
-      <div class='toggle' onclick='${toggleValue}'>
-        <div class='switch ${value}'>
+      <div class='checkbox' onclick='${toggleValue}'>
+        <div class='toggle ${value}'>
         </div>
         <span>${label}</span>
       </div>

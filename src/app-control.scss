@@ -82,7 +82,7 @@ input[type=number] {
     }
 }
 
-:host .toggle {
+:host .checkbox {
     align-items: center;
     display: flex;
     padding: $padding;
@@ -93,7 +93,7 @@ input[type=number] {
         flex: 1;
         padding-left: $padding;
     }
-    .switch {
+    .toggle {
         display: block;
         height: 1.8rem;
         width: 3.6rem;
@@ -127,14 +127,15 @@ input[type=number] {
             transition: left 0.1s linear;
         }
     }
-    .switch.true::after {
+    .toggle.true::after {
         left: 50%;
     }
-    .switch.false::before {
+    .toggle.false::before {
         box-shadow: 0 0 0 0 $blue-light;
     }
 }
 
+// Error state for numeric input
 :host input:invalid {
     outline: none;
     box-shadow: none;
