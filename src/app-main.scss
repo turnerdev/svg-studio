@@ -28,6 +28,9 @@
     }
 }
 :host svg {
+    &.gridlines {
+        background-image: linear-gradient(to right, $gridline-color 1px, transparent 1px), linear-gradient(to bottom, $gridline-color 1px, transparent 1px);
+    }
     &.design {
         g.handles circle {
             stroke: #FFFFFF30;

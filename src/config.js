@@ -1,8 +1,8 @@
 export default {
     settings: {
         gridlines: true,
-        snap: "sdf",
-        other: "34"
+        snapToGrid: false,
+        gridSize: 25
     },
     sidebar: {
         width: '35rem',

@@ -16,30 +16,45 @@ import styles from './app-control.scss';
 // }
 
 const toggleValue = host => {
-  // console.log(host);
   dispatch(host, 'update', { detail: !host.value })
 }
 
+const setValue = (host, event) => {
+  dispatch(host, 'update', { detail: event.target.value })
+}
+
 export const AppControl = {
-  key: undefined,
-  value: undefined,
   datatype: {
     get: (host) => typeof host.value
   },
+  key: undefined,
+  label: undefined,
+  editing: false,
+  value: undefined,
   update: undefined,
-  render: ({ icon, value, datatype }) => html`
+  render: ({ icon, label, value, datatype }) => html`
     ${icon && html`
       <div class='icon' data-icon='${icon}'>${icon}</div>
     `}
     ${datatype === 'boolean' && html`
       <div class='toggle' onclick='${toggleValue}'>
-        <div class='switch'>
+        <div class='switch ${value}'>
         </div>
-        <span>Toggle: ${value}</span>
+        <span>${label}</span>
+      </div>
+    `}
+    ${datatype === 'number' && html`
+      <div class='number' onclick='${host => host.editing = true}'>
+        <span>${label}</span>
+        <input type='number' 
+          onblur='${host => host.editing = false}'
+          onload='${(host, event) => event.target.focus()}'
+          onkeyup='${(host, event) => { setValue(host, event); event.KeyCode === 13 && (host.editing = false); }}'
+          value='${value}'>
       </div>
     `}
     <slot></slot>
-  `.style(styles),
+  `.style(styles)
 };
 
 define('app-control', AppControl);

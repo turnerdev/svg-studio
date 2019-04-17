@@ -1,5 +1,18 @@
 @import "variables";
 
+$text-size: 1.6rem;
+$padding: 1rem;
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 :host {
     align-items: center;
     align-content: center;
@@ -8,12 +21,8 @@
     position: relative;
     max-width: 100%;
     overflow: hidden;
-    font-size: 1.4rem;
+    font-size: $text-size;
     color: $light-0;
-}
-
-:host(:not(:first-child)) {
-    margin-top: 2px;
 }
 
 :host .icon {
@@ -47,15 +56,90 @@
     padding-left: 1rem;
 }
 
-:host .toggle {
+:host .number {
+    border-bottom: 1px solid $dark-0;
     display: flex;
-    padding: 1rem;
-    .switch {
-        background-color: red;
+    align-items: center;
+    width: 100%;
+    flex-direction: row;
+    span {
         display: block;
-        width: 50px;
-        height: 50px;
+        flex: 1;
+        padding: 0 $padding;
+        text-align: right;
     }
+    span, div, input {
+        display: block;
+        flex: 0 0 50%;
+    }
+    input {
+        color: $light-0;
+        background-color: $dark-0;
+        border: 0;
+        padding: $padding;
+        font-size: $text-size;
+        outline: none;
+    }
+}
+
+:host .toggle {
+    align-items: center;
+    display: flex;
+    padding: $padding;
+    width: 100%;
+    border-bottom: 1px solid $dark-0;
+    cursor: pointer;
+    span {
+        flex: 1;
+        padding-left: $padding;
+    }
+    .switch {
+        display: block;
+        height: 1.8rem;
+        width: 3.6rem;
+        background-color: #292932;
+        position: relative;
+        border: 2px solid #292932;
+        &::before {
+            content: ' ';
+            background-color: $green-dark;
+            
+            background: rgb(76,167,54);
+            
+            display: block;
+            height: 1.8rem;
+            width: 1.8rem;
+            position: absolute;
+            box-shadow: 0 0 0.5rem 0 $green-light;
+            box-shadow: left 0.1s linear;
+        }
+        &::after {
+            z-index: 10;
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: ' ';
+            background-color: $dark-2;
+            display: block;
+            height: 1.8rem;
+            width: 1.8rem;
+            position: absolute;
+            transition: left 0.1s linear;
+        }
+    }
+    .switch.true::after {
+        left: 50%;
+    }
+    .switch.false::before {
+        box-shadow: 0 0 0 0 $blue-light;
+    }
+}
+
+:host input:invalid {
+    outline: none;
+    box-shadow: none;
+    color: $red-light;
+    background-color: darken($red-dark, 30%);
 }
 
 ::slotted(span) {

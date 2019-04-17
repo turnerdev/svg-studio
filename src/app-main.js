@@ -14,6 +14,7 @@ import styles from './app-main.scss';
 
 import { ControlFactory } from './control-factory.js';
 import { Path, getShape } from './path.js';
+import { Label } from './label.js';
 
 //   <g transform="translate(${path.get('x')}, ${path.get('y')})")>  </g>
 const SVGPath = (path) => svg`
@@ -40,8 +41,14 @@ const documentMouseup = (host) => {
   }
 }
 
-const updateSetting = (host, event) => {
-  host.config = host.config.setIn(['settings', 'gridlines'], event.detail);
+/**
+ * Hook callback for updates to configuration settings
+ * @param {*} host 
+ * @param {*} key 
+ * @param {*} value 
+ */
+const updateSetting = (host, key, value) => {
+  host.config = host.config.setIn(['settings', key], JSON.parse(value) || value);
 }
 
 export const AppMain = {
@@ -76,16 +83,20 @@ export const AppMain = {
     }
   },
   render: ({ config, paths }) => html`
+    <style>
+      svg { background-size: ${config.getIn(['settings','gridSize'])}px ${config.getIn(['settings','gridSize'])}px; }
+    </style>
     <app-panel theme='${config.getIn(['sidebar','theme'])}' width='${config.getIn(['sidebar','width'])}' class='sidebar'>
 
       <div class='logo'>
-        <span>svg</span>stud.io
+        <span>svg</span>stud.io${config.getIn(['settings','other'])}
       </div>
 
       <!-- Config panel -->
       <app-panel theme='${config.getIn(['sidebar','theme'])}' title='Config' icon='settings'>
         ${config.get('settings').mapKeys((key, value) => html`
-          <app-control key='${key}' value='${value}' onupdate='${updateSetting}' />
+          <app-control key='${key}' value='${value}' label='${Label('settings', key)}'
+            onupdate='${(host, event) => updateSetting(host, key, event.detail)}' />
         `).toArray().map(i => i[0])}
       </app-panel>
 
@@ -112,7 +123,8 @@ export const AppMain = {
 
       <app-tab title='Design' active='${true}' icon='x'>
         <app-canvas mode='design'>
-          <svg width='${config.getIn(['canvas','width'])}' height='${config.getIn(['canvas','height'])}' class='design'>
+          <svg width='${config.getIn(['canvas','width'])}' height='${config.getIn(['canvas','height'])}'
+               class='design ${config.getIn(['settings','gridlines']) && 'gridlines'}'>
             ${paths.map(SVGPath).toArray()}
             ${paths.map(ControlFactory).toArray().flat()}
           </svg>

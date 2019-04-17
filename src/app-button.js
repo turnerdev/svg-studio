@@ -10,7 +10,7 @@ export const AppButton = {
     ${label && html`
       <span>${label}</span>
     `}
-  `.style(styles),
+  `.style(styles)
 };
 
 define('app-button', AppButton);

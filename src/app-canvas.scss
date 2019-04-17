@@ -15,8 +15,7 @@
     ::slotted(svg) {
         border: 1px solid $gridline-color;
         background-color: transparent;
-        background-image: linear-gradient(to right, $gridline-color 1px, transparent 1px), linear-gradient(to bottom, $gridline-color 1px, transparent 1px);
-        background-size: 25px 25px;
+        
         // box-shadow: 0 0 2vmin rgba(0,0,0,0.2);
         position: relative;
         z-index: 10;

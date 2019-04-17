@@ -29,6 +29,19 @@ $blue-dark: #2e86de;
 $purple-light: #5f27cd;
 $purple-dark: #341f97;
 
+$brand-color: $blue-dark;
+
 :root {
     font-size: 62.5%;
 }
+
+
+::selection {
+    background: $brand-color; /* WebKit/Blink Browsers */
+    color: white;
+}
+::-moz-selection {
+    background: $brand-color; /* Gecko Browsers */
+    color: white;
+}
+
