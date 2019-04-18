@@ -23,6 +23,7 @@ input[type=number] {
     overflow: hidden;
     font-size: $text-size;
     color: $light-0;
+    border-bottom: 1px solid $dark-0;
 }
 
 :host .icon {
@@ -57,7 +58,6 @@ input[type=number] {
 }
 
 :host .number {
-    border-bottom: 1px solid $dark-0;
     display: flex;
     align-items: center;
     width: 100%;
@@ -87,7 +87,6 @@ input[type=number] {
     display: flex;
     padding: $padding;
     width: 100%;
-    border-bottom: 1px solid $dark-0;
     cursor: pointer;
     span {
         flex: 1;
@@ -143,14 +142,22 @@ input[type=number] {
     background-color: darken($red-dark, 30%);
 }
 
+::slotted(app-button) {
+    margin: 0.5rem;
+}
+
+::slotted(app-button:not(:first-of-type)) {
+    margin-left: 0;
+}
+
+
 ::slotted(span) {
     align-items: center;
     color: $light-2;
     display : block;
     flex: 1;
-    margin-left: 2px;
-    padding-left: 1vmin;
+    padding: 0 1vmin;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: normal;
+    white-space: nowrap;
 }

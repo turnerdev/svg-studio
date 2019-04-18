@@ -7,6 +7,7 @@ import './app-control.js';
 import './app-canvas.js';
 import './app-tabset.js';
 import './app-button.js';
+import { ButtonState } from './app-button.js';
 
 import config from './config.js';
 
@@ -102,10 +103,14 @@ export const AppMain = {
 
       <!-- Layers panel -->
       <app-panel theme='${config.getIn(['sidebar','theme'])}' title='Layers' icon='layers'>
-        ${paths.map((path) => html`
+        ${paths.map((path, i) => html`
           <app-control>
-            <app-button icon='eye' />
-            <span>${path.get('name')}</span>
+            <app-button icon='eye' onclick='${(host, event) => {
+              console.log(event.detail);
+              host.paths = paths.setIn([i, 'visible'], (event.detail === ButtonState.active));
+            }}' state='${path.get('visible') ? ButtonState.active : ButtonState.idle}' toggle></app-button>
+            <app-button icon='link'></app-button>
+            <span>${path.get('name')}sdf</span>
           </app-control>
         `).toJS().flat()}
       </app-panel>
@@ -125,8 +130,8 @@ export const AppMain = {
         <app-canvas mode='design'>
           <svg width='${config.getIn(['canvas','width'])}' height='${config.getIn(['canvas','height'])}'
                class='design ${config.getIn(['settings','gridlines']) && 'gridlines'}'>
-            ${paths.map(SVGPath).toArray()}
-            ${paths.map(ControlFactory).toArray().flat()}
+            ${paths.filter(p => p.get('visible')).map(SVGPath).toArray()}
+            ${paths.filter(p => p.get('visible')).map(ControlFactory).toArray().flat()}
           </svg>
         <app-canvas>
       </app-tab>
