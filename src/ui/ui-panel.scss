@@ -1,6 +1,6 @@
-@import "variables";
+@import "../theme.scss";
 
-$padding: 0.75rem;
+$spacing: 0.75rem;
 
 :host {
     background-color: $light-0;
@@ -9,6 +9,26 @@ $padding: 0.75rem;
     flex-direction: column;
     position: relative;
 }
+
+:host([scrollable]) {
+    overflow: none;
+    .body {
+        overflow-y: scroll;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(230,230,255,0.1) transparent;
+        height: 0;
+        &::-webkit-scrollbar-track  {
+            background-color: transparent;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            // height: 30px;
+            background-color: rgba(0,0,0,0.2);
+        }
+    }
+}
+
+
 
 :host .header {
     background-color: rgba(0,0,0,0.2);
@@ -39,20 +59,20 @@ $padding: 0.75rem;
     flex-direction: column;
     flex-grow: 1;
     height: 100%;
+    z-index: 10;
     &.active {
         flex: 1;
     }
     &:first-child {
-        padding-top: $padding;
+        padding-top: $spacing;
     }
 }
 
 :host([theme="dark"]) {
     color: $light-0;
     background-color: $dark-0;
-    overflow: hidden;
 
-    ::slotted(app-panel) {
+    ::slotted(ui-panel) {
         background-color: $dark-1;
         margin: 0 0.5rem 0.5rem 0.5rem;
     }

@@ -12,6 +12,11 @@ $gridline-color: #ffffff33;
 
 $font-face: 'Roboto', sans-serif;
 
+$spacing: 1rem;
+$half-spacing: $spacing / 2;
+$quarter-spacing: $spacing / 4;
+$double-spacing: $spacing * 2;
+
 $pink-light: #ff9ff3;
 $pink-dark: #f368e0;
 $yellow-light: #feca57;
@@ -30,6 +35,11 @@ $purple-light: #5f27cd;
 $purple-dark: #341f97;
 
 $brand-color: $blue-dark;
+$active-color: $yellow-dark;
+
+
+$text-size: 1.6rem;
+
 
 :root {
     font-size: 62.5%;
@@ -44,3 +54,17 @@ $brand-color: $blue-dark;
     color: white;
 }
 
+/**
+ * Mixins
+ */
+
+%input {
+    background-color: $dark-0;
+    border: 0;
+    color: $light-0;
+    font-size: $text-size;
+    margin: $half-spacing;
+    min-width: 0;
+    outline: none;
+    padding: $half-spacing $spacing;
+}

@@ -1,8 +1,8 @@
 import { html, define } from 'hybrids';
 
-import './app-icon';
+import './ui-icon';
 
-import styles from './app-panel.scss';
+import styles from './ui-panel.scss';
 
 /**
  * Toggle the collapsed state of the component
@@ -12,11 +12,15 @@ const toggleState = host => {
   host.collapsed = !host.collapsed;
 }
 
-export const AppPanel = {
+/**
+ * Panel component
+ */
+export const UIPanel = {
   active: false,
   collapsed: false,
   icon: '',
   title: '',
+  scrollable: false,
   width: '',
   render: ({ title, icon, width, collapsed }) =>  html`
     <style>
@@ -28,17 +32,17 @@ export const AppPanel = {
     ${title && html`
       <div class='header' onclick='${toggleState}'>
         <div class='icon'>
-          <app-icon glyph='${icon}' />
+          <ui-icon glyph='${icon}' />
         </div>
         <span>${title}</span>
       </div>
     `}
     ${!collapsed && html`
       <div class='body'>
-        <slot></slot>
+        <slot></slot> 
       </div>
     `}
   `.style(styles),
 };
 
-define('app-panel', AppPanel);
+define('ui-panel', UIPanel);

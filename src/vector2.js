@@ -1,6 +1,6 @@
 /**
  * Vector 2
- * Forked from http://pryme8.com/Vector2-js-vector-library/
+ * Forked from http://pryme8.com/Vector2-js-vector-library/, converted to ES6
  */
 export const Vector2 = function(x, y) {
     if (!this) {

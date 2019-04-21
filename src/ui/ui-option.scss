@@ -1,0 +1,78 @@
+@import "../theme.scss";
+
+$button-size: 3rem;
+
+:host(:hover) .info {
+    display: block;
+}
+
+:host .selected {
+    align-self: center;
+    color: white;
+    text-align: center;
+}
+
+:host(:hover) {
+    li {
+        display: flex;
+    }
+    .description {
+        display: block;
+        top: $half-spacing;
+        transform: translateY(-100%);
+        background-color: rgba(0,0,0,.5);
+    }
+    ul {
+        background-color: rgba(0,0,0,.5);
+    }
+}
+
+:host {
+    overflow: visible;
+    height: $button-size;
+    width: $button-size;
+
+    .description {
+        display: none;
+        text-align: none;
+        padding: $spacing;
+        position: absolute;
+    }
+
+    ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: $half-spacing;
+        position: absolute;
+        margin-left: -$half-spacing;
+        margin-top: -$half-spacing;
+        cursor: pointer;
+
+        li {
+            align-items: center;
+            cursor: pointer;
+            display: none;
+            flex: 0 0 1;
+            height: $button-size;
+            justify-content: center;
+            text-align: center;
+            width: $button-size;
+            border: 1px solid rgba(0,0,0,0.2);
+            transition: border .2s linear;
+            &:not(:first-of-type) {
+                margin-left: $half-spacing;
+            }
+            &:hover {
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+        }
+        li.selected {
+            display: flex;
+        }
+    }
+}
+
+
+
+

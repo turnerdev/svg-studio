@@ -1,7 +1,7 @@
 import { expect } from 'chai'; 
-import { AppPanel } from '../src/app-panel.js';
+import { UIPanel } from '../src/ui-panel.js';
 
-describe('<app-panel> unit tests', () => {
+describe('<ui-panel> unit tests', () => {
   let container;
   
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('<app-panel> unit tests', () => {
       title: title,
       icon: 'layer'
     };
-    const update = AppPanel.render(host);
+    const update = UIPanel.render(host);
 
     update(host, container);
     
@@ -23,7 +23,7 @@ describe('<app-panel> unit tests', () => {
 
   it('should render collapsed', () => {
     const host = { collapsed: true };
-    const update = AppPanel.render(host);
+    const update = UIPanel.render(host);
 
     update(host, container);
     

@@ -1,26 +1,33 @@
 import { html, define, dispatch } from 'hybrids';
 
-import styles from './app-button.scss';
+import styles from './ui-button.scss';
 
 export const ButtonState = Object.freeze({idle: 0, active: 1, disabled: 2});
 
+/**
+ * Toggle active property of the button
+ * @param {*} host 
+ * @param {*} event 
+ */
 const toggleState = (host, event) => {
   if (host.toggle) {
     host.state = host.state === ButtonState.idle ? ButtonState.active : ButtonState.idle;
   }
-
   dispatch(host, 'click', { detail: host.state });
   event.stopPropagation();
 }
 
-export const AppButton = {
+/**
+ * Button component
+ */
+export const UIButton = {
   icon: '', 
   label: '',
   toggle: true,
   state: ButtonState.idle,
   render: ({ icon, label, state }) => html`
     <button class='test ${state === ButtonState.active ? 'active' : ''}' onclick='${toggleState}' >
-      <app-icon glyph='${icon}' />
+      <ui-icon glyph='${icon}' />
       ${label && html`
         <span>${label}</span>
       `}
@@ -28,4 +35,4 @@ export const AppButton = {
   `.style(styles)
 };
 
-define('app-button', AppButton);
+define('ui-button', UIButton);

@@ -1,4 +1,4 @@
-import './app-main.js';
+import './app.js';
 
 import normalize from 'normalize.css';
 import global from './global.scss';

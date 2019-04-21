@@ -1,7 +1,4 @@
-@import "variables";
-
-$text-size: 1.6rem;
-$padding: 1rem;
+@import "../theme.scss";
 
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
@@ -13,29 +10,32 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+:host(:first-of-type) {
+    border-top: 2px solid $dark-0;
+}
+
 :host {
-    align-items: center;
     align-content: center;
+    align-items: center;
+    border-bottom: 2px solid $dark-0;
     color: $dark-0;
-    display: flex;
-    position: relative;
-    max-width: 100%;
-    overflow: hidden;
-    font-size: $text-size;
     color: $light-0;
-    border-bottom: 1px solid $dark-0;
+    display: flex;
+    font-size: $text-size;
+    max-width: 100%;
+    position: relative;
 }
 
 :host .icon {
-    display:flex;
-    justify-content:center;
     align-items:center;
     background-color: #22222E;
-    height: 4vmin;
-    width: 4vmin;
     color: #111111;
+    display:flex;
     font-size: 1.4rem;
+    height: 4vmin;
+    justify-content:center;
     text-shadow: 0 0 10px black;
+    width: 4vmin;
 
     &[data-icon="M"] { color: $red-dark; }
     &[data-icon="m"] { color: $red-light; }
@@ -46,52 +46,41 @@ input[type=number] {
     &[data-icon="Z"] { color: $green-light; }
 }
 
-:host .arg {
-    align-items: center;
-    background-color: #CCCCFF33;
-    color: #EEE;
-    display: flex;
-    flex: 1;
-    height: 4vmin;
-    margin-left: 2px;
-    padding-left: 1rem;
+:host input {
+    @extend %input;
 }
 
 :host .number {
-    display: flex;
     align-items: center;
-    width: 100%;
+    display: flex;
     flex-direction: row;
+    width: 100%;
+
     span {
         display: block;
         flex: 1;
-        padding: 0 $padding;
+        padding: 0 $spacing;
         text-align: right;
     }
-    span, div, input {
+
+    span, div {
         display: block;
         flex: 0 0 50%;
-    }
-    input {
-        color: $light-0;
-        background-color: $dark-0;
-        border: 0;
-        padding: $padding;
-        font-size: $text-size;
-        outline: none;
     }
 }
 
 :host .checkbox {
     align-items: center;
-    display: flex;
-    padding: $padding;
-    width: 100%;
     cursor: pointer;
+    display: flex;
+    padding: $spacing;
+    width: 100%;
+
     span {
         flex: 1;
-        padding-left: $padding;
+        padding-left: $spacing;
     }
+
     .toggle {
         display: block;
         height: 1.8rem;
@@ -101,15 +90,12 @@ input[type=number] {
         border: 2px solid #292932;
         &::before {
             content: ' ';
-            background-color: $green-dark;
-            
-            background: rgb(76,167,54);
-            
+            background-color: $active-color;
             display: block;
             height: 1.8rem;
             width: 1.8rem;
             position: absolute;
-            box-shadow: 0 0 0.5rem 0 $green-light;
+            box-shadow: 0 0 0.5rem 0 $active-color;
             box-shadow: left 0.1s linear;
         }
         &::after {
@@ -126,9 +112,11 @@ input[type=number] {
             transition: left 0.1s linear;
         }
     }
+
     .toggle.true::after {
         left: 50%;
     }
+    
     .toggle.false::before {
         box-shadow: 0 0 0 0 $blue-light;
     }
@@ -142,14 +130,58 @@ input[type=number] {
     background-color: darken($red-dark, 30%);
 }
 
-::slotted(app-button) {
-    margin: 0.5rem;
+:host .group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    max-width: 100%;
+    flex-shrink: initial;
+
+    .group {
+        flex-direction: row;
+
+        .group {
+
+        }
+
+        input {
+            min-width: 0;
+            width: 100%;
+            -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+            box-sizing: border-box;         /* Opera/IE 8+ */
+            margin: 0;
+            border: 1px solid transparent;
+            &:not(:first-of-type) {
+                margin-left: $half-spacing;
+            }
+        }
+    }
+}
+:host > .group > .group:first-of-type  {
+    margin-top: $half-spacing;
+}
+:host > .group {
+    margin-right: $half-spacing
 }
 
-::slotted(app-button:not(:first-of-type)) {
+:host > .group > .group {
+    margin-bottom: $half-spacing;
+}
+
+:host > .group > .group > .group + .group {
+    margin-left: $half-spacing;
+}
+
+::slotted(ui-button),
+::slotted(ui-option) {
+    margin: 0.5rem;
+    align-self: baseline;
+}
+
+::slotted(ui-button:not(:first-of-type)) {
     margin-left: 0;
 }
-
 
 ::slotted(span) {
     align-items: center;

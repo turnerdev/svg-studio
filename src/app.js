@@ -2,22 +2,15 @@ import { fromJS } from 'immutable';
 import { html, define, property, svg } from 'hybrids';
 // import "babel-polyfill"
 
-import './app-panel.js';
-import './app-control.js';
-import './app-canvas.js';
-import './app-tabset.js';
-import './app-button.js';
-import { ButtonState } from './app-button.js';
-
-import config from './config.js';
-
-import styles from './app-main.scss';
+import { ButtonState } from './ui';
 
 import { ControlFactory } from './control-factory.js';
 import { Path, getShape } from './path.js';
 import { Label } from './label.js';
+import config from './config.js';
 
-//   <g transform="translate(${path.get('x')}, ${path.get('y')})")>  </g>
+import styles from './app.scss';
+
 const SVGPath = (path) => svg`
   <path d='${getShape(path)}' fill='transparent' stroke='black' />
 `;
@@ -51,7 +44,7 @@ const documentMouseup = (host) => {
 const updateSetting = (host, key, value) => {
   host.config = host.config.setIn(['settings', key], JSON.parse(value) || value);
 }
-
+// value='${item.get('args')}'
 export const AppMain = {
   config: property(fromJS(config)),
   paths: property(fromJS([
@@ -87,64 +80,67 @@ export const AppMain = {
     <style>
       svg { background-size: ${config.getIn(['settings','gridSize'])}px ${config.getIn(['settings','gridSize'])}px; }
     </style>
-    <app-panel theme='${config.getIn(['sidebar','theme'])}' width='${config.getIn(['sidebar','width'])}' class='sidebar'>
+    
+    <ui-panel theme='${config.getIn(['sidebar','theme'])}' width='${config.getIn(['sidebar','width'])}' class='sidebar'>
 
       <div class='logo'>
         <span>svg</span>stud.io${config.getIn(['settings','other'])}
       </div>
 
       <!-- Config panel -->
-      <app-panel theme='${config.getIn(['sidebar','theme'])}' title='Config' icon='settings'>
+      <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Config' icon='settings' scrollable>
         ${config.get('settings').mapKeys((key, value) => html`
-          <app-control key='${key}' value='${value}' label='${Label('settings', key)}'
+          <ui-control key='${key}' value='${value}' label='${Label('settings', key)}'
             onupdate='${(host, event) => updateSetting(host, key, event.detail)}' />
         `).toArray().map(i => i[0])}
-      </app-panel>
+      </ui-panel>
 
       <!-- Layers panel -->
-      <app-panel theme='${config.getIn(['sidebar','theme'])}' title='Layers' icon='layers'>
+      <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Layers' icon='layers' scrollable>
         ${paths.map((path, i) => html`
-          <app-control>
-            <app-button icon='eye' onclick='${(host, event) => {
+          <ui-control>
+            <ui-button icon='eye' onclick='${(host, event) => {
               console.log(event.detail);
               host.paths = paths.setIn([i, 'visible'], (event.detail === ButtonState.active));
-            }}' state='${path.get('visible') ? ButtonState.active : ButtonState.idle}' toggle></app-button>
-            <app-button icon='link'></app-button>
-            <span>${path.get('name')}sdf</span>
-          </app-control>
+            }}' state='${path.get('visible') ? ButtonState.active : ButtonState.idle}'></ui-button>
+            <ui-button icon='link'></ui-button>
+            <span>${path.get('name')}</span>
+          </ui-control>
         `).toJS().flat()}
-      </app-panel>
+      </ui-panel>
 
       <!-- Path panel -->
-      <app-panel theme='${config.getIn(['sidebar','theme'])}' title='Path' icon='share-2'>
+      <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Path' icon='share-2' scrollable>
         ${paths.map(path => path.get('d').map(item => html`
-          <app-control icon='${item.get('command')}' args='${item.get('args').toJS()}'/>
+          <ui-control value='${item.get('args')}'>
+            <ui-option selected='${item.get('command')}' options='${config.get('commandOptions').toJS()}' />
+          </ui-control>
         `)).toJS().flat()}
-      </app-panel>
+      </ui-panel>
 
-    </app-panel> 
+    </ui-panel> 
 
-    <app-tabset>
+    <ui-tabset>
 
-      <app-tab title='Design' active='${true}' icon='x'>
-        <app-canvas mode='design'>
+      <ui-tab title='Design' active='${true}' icon='x'>
+        <ui-canvas mode='design'>
           <svg width='${config.getIn(['canvas','width'])}' height='${config.getIn(['canvas','height'])}'
                class='design ${config.getIn(['settings','gridlines']) && 'gridlines'}'>
             ${paths.filter(p => p.get('visible')).map(SVGPath).toArray()}
             ${paths.filter(p => p.get('visible')).map(ControlFactory).toArray().flat()}
           </svg>
-        <app-canvas>
-      </app-tab>
+        <ui-canvas>
+      </ui-tab>
 
-      <app-tab title='Render' active='${false}' icon='x'>
-        <app-canvas mode='render'>
+      <ui-tab title='Render' active='${false}' icon='x'>
+        <ui-canvas mode='render'>
           <svg width='${config.getIn(['canvas','width'])}' height='${config.getIn(['canvas','height'])}' class='render'>
             ${paths.map(SVGPath).toArray()}
           </svg>
-        <app-canvas>
-      </app-tab>
+        <ui-canvas>
+      </ui-tab>
 
-      <app-tab title='Markup' active='${false}' icon='x'>
+      <ui-tab title='Markup' active='${false}' icon='x'>
         <pre>
           ${(() => { 
             return paths.map(SVGPath).toArray().map(x => {
@@ -153,10 +149,10 @@ export const AppMain = {
               return fragment.outerHTML;
             }).join('\n');
           })()}
-        </pre>white
-      </app-tab>
+        </pre>
+      </ui-tab>
 
-    </app-tabset>
+    </ui-tabset>
   `.style(styles),
 };
 

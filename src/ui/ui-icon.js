@@ -2,7 +2,7 @@ import { html, svg, define } from 'hybrids';
 
 import * as feather from 'feather-icons';
 
-import style from './app-icon.scss';
+import style from './ui-icon.scss';
 
 /**
  * Generates SVG content for the specified feather icon
@@ -14,13 +14,14 @@ const featherIconSVGContent = (icon) => {
 }
 
 /**
- * AppIcon - Hybrids wrapper for Feather Icon
+ * Feather Icon component
  */
-export const AppIcon = {
+export const UIIcon = {
   glyph: '',
   width: '20',
   height: '20',
-  render: ({ width, height, glyph }) => html`
+  filters: ['glow'],
+  render: ({ height, glyph, width }) => html`
     <svg viewBox='0 0 24 24'
         width='${width}' height='${height}'
         preserveAspectRatio='xMinYMin meet'
@@ -33,4 +34,4 @@ export const AppIcon = {
   `.style(style)
 }
 
-define('app-icon', AppIcon);
+define('ui-icon', UIIcon);

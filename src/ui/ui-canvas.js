@@ -1,8 +1,8 @@
 import { html, define } from 'hybrids';
 
-import styles from './app-canvas.scss';
+import styles from './ui-canvas.scss';
 
-export const AppCanvas = {
+export const UICanvas = {
   render: () => html`
     <div class='wrapper'>
       <slot></slot>
@@ -10,4 +10,4 @@ export const AppCanvas = {
   `.style(styles),
 };
 
-define('app-canvas', AppCanvas);
+define('ui-canvas', UICanvas);

@@ -1,1 +1,1 @@
-import './app-panel-test.js'
+import './ui-panel-test.js'
