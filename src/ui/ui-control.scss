@@ -1,5 +1,9 @@
 @import "../theme.scss";
 
+:host([active]) {
+    background-color: #FFFFFF11;
+}
+
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
@@ -58,8 +62,8 @@ input[type=number] {
 
     span {
         display: block;
-        flex: 1;
-        padding: 0 $spacing;
+        position: relative;
+        right: $spacing;
         text-align: right;
     }
 

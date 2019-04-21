@@ -2,35 +2,14 @@ import { svg } from 'hybrids';
 import { List } from 'immutable';
 
 import { Vector2 } from './vector2.js';
+import * as Utils from './utils.js';
 
-// const increment = (, ) => {last, elements}
-
-const Utils = {
-  clamp: (min, max, val) => Math.min(Math.max(val, min), max),
-  describeArc: (x, y, radius, spread, startAngle, endAngle) => {
-    const innerStart = Utils.polarToCartesian(x, y, radius, endAngle);
-    const innerEnd = Utils.polarToCartesian(x, y, radius, startAngle);
-    const outerStart = Utils.polarToCartesian(x, y, radius + spread, endAngle);
-    const outerEnd = Utils.polarToCartesian(x, y, radius + spread, startAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-    return [
-      'M', outerStart.x, outerStart.y,
-      'A', radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
-      'L', innerEnd.x, innerEnd.y, 
-      'A', radius, radius, 0, largeArcFlag, 1, innerStart.x, innerStart.y, 
-      'L', outerStart.x, outerStart.y, "Z"
-    ].join(' ');
-  },
-  polarToCartesian: (centerX, centerY, radius, angleInDegrees) => {
-    var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
-    return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
-    }
-  }
-};
-
-
+/**
+ * Returns coordinates relative to the SVG canvas from a mouse event
+ * 
+ * @param {hybrids} host 
+ * @param {MouseEvent} event 
+ */
 const SVGCoords = (host, event) => {
   const box = host.shadowRoot.querySelector('svg').getBoundingClientRect();
   return Vector2(
@@ -39,20 +18,10 @@ const SVGCoords = (host, event) => {
   );
 }
 
-const UpdatePath = (paths, path, di, ai, arg) => {
-  const newpaths = paths.slice(0);
-  const index = paths.indexOf(path);
-  if (~index) {
-    const args = newpaths[index].d[di].args.slice(0);
-    args[ai] = arg;
-    newpaths[index].d[di].args = args;
-  }
-  return newpaths;
-}
-
 /**
  * Control Factory
  * Returns a list of controls for the provided path
+ * 
  * @param {Path} path 
  */
 export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, di) => {
@@ -63,9 +32,8 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
   }};
   
   return c.get('args').reduce((current, arg, ai) => {
-    
-    var position;
-    var absArg;
+    let position;
+    let absArg;
 
     // Base path to the argument tuple
     // Path idx > 'd' param > D command idx > 'args' param > arg idx
@@ -80,14 +48,14 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * 
        * Formula: Pn = {x, y}
        */
-      case 'M': // (x, y)+            
+      case 'M': // (x, y)+
         position = Vector2(...arg.get(0).toArray());
-        return nextControl(current, position, controlMoveTo(...position.getValue(), {
-          drag: (host, event) => {
-            const pos = SVGCoords(host, event); 
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event);
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
           }
-        }));
+        ]));
         
       /**
        * Move the current point by shifting the last known position of the
@@ -99,12 +67,12 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        */
       case 'm': // (dx, dy)+
         position = Vector2(...arg.get(0).toArray()).add(current.position);
-        return nextControl(current, position, controlMoveTo(...position.getValue(), {
-          drag: (host, event) => {
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
             const pos = SVGCoords(host, event).subtract(current.position);
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
           }
-        }));
+        ]));
 
       /**
        * Draw a line from the current point to the end point specified by x,y.
@@ -114,16 +82,13 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {x, y}
        */
       case 'L': // (x, y)+
-        position = Vector2(...arg[0]);
-        return {
-          position: position,
-          elements: [...current.elements, controlMoveTo(...position.getValue(), {
-            drag: (host, event) => {
-              const pos = SVGCoords(host, event);
-              host.paths = UpdatePath(host.paths, path, di, ai, [pos.getValue()]);
-            }
-          })]
-        };
+        position = Vector2(...arg.get(0).toArray());
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event);
+            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+          }
+        ]));
 
       /**
        * Draw a line from the current point to the end point, which is the
@@ -134,16 +99,13 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {xo + dx, yo + dy}
        */
       case 'l': // (dx, dy)+
-        position = Vector2(...arg.get(-1).toArray()).add(current.position)
-        return {
-          position: position,
-          elements: [...current.elements, controlMoveTo(...position.getValue(), {
-            drag: (host, event) => {
-              const pos = SVGCoords(host, event);
-              host.paths = UpdatePath(host.paths, path, di, ai, [pos.getValue()]);
-            }
-          })]
-        };
+        position = Vector2(...arg.get(0).toArray()).add(current.position);
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event).subtract(current.position);
+            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+          }
+        ]));
 
       /**
        * Draw a horizontal line from the current point to the end point, which
@@ -154,16 +116,13 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {x, yo}
        */
       case 'H': // x+
-        position = Vector2(...arg.get(-1).toArray(), current.position.y);
-        return {
-          position: position,
-          elements: [...current.elements, controlMoveTo(...position.getValue(), {
-            drag: (host, event) => {
-              const pos = SVGCoords(host, event);
-              host.paths = UpdatePath(host.paths, path, di, ai, [pos.x]);
-            }
-          })]
-        };
+        position = Vector2(...arg.get(0).toArray(), current.position.y);
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event);
+            host.paths = host.paths.setIn([...base, 0], pos.x);
+          }
+        ]));
 
       /**
        * Draw a horizontal line from the current point to the end point, which
@@ -175,13 +134,13 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {xo + dx, yo}
        */
       case 'h': // dx+
-        position = Vector2(...arg.get(-1).toArray(), 0).add(current.position);
-        return nextControl(current, position, controlMoveTo(...position.getValue(), {
-          drag: (host, event) => {
+        position = Vector2(...arg.get(0).toArray(), 0).add(current.position);
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
             const pos = SVGCoords(host, event).subtract(current.position); 
             host.paths = host.paths.setIn([...base, 0], List([pos.x]));
           }
-        }));
+        ]));
 
       /**
        * Draw a vertical line from the current point to the end point, which
@@ -192,16 +151,13 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {xo, y} z
        */
       case 'V': // y+
-        position = Vector2(current.position.x, ...arg[0]);
-        return {
-          position: position,
-          elements: [...current.elements, controlMoveTo(...position.getValue(), {
-            drag: (host, event) => {
-              const pos = SVGCoords(host, event);
-              host.paths = UpdatePath(host.paths, path, di, ai, [pos.y]);
-            }
-          })]
-        };
+        position = Vector2(current.position.y, ...arg.get(0).toArray());
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event);
+            host.paths = host.paths.setIn([...base, 0], pos.y);
+          }
+        ]));
 
       /**
        * Draw a vertical line from the current point to the end point, which
@@ -213,25 +169,28 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
        * Formula: Po' = Pn = {xo, yo + dy}
        */
       case 'v': // dy+
-        position = Vector2(0, ...arg[0]).add(current.position);
-        return {
-          position: position,
-          elements: [...current.elements, controlMoveTo(...position.getValue(), {
-            drag: (host, event) => {
-              const pos = SVGCoords(host, event).subtract(current.position);
-              host.paths = UpdatePath(host.paths, path, di, ai, [pos.y]);
-            }
-          })]
-        };
+        position = Vector2(current.position.x, ...arg.get(0).toArray());
+        return nextControl(current, position, StandardControls(position, arg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event).subtract(current.position);
+            host.paths = host.paths.setIn([...base, 0], pos.y);
+          }
+        ]));
       
       /**
-       * Draw a smooth cubic Bézier curve from the current point to the end point specified by x,y. The end control point is specified by x2,y2. The start control point is a reflection of the end control point of the previous curve command. If the previous command wasn't a curve, the start control point is the same as the curve starting point (current point). Any subsequent pair(s) of coordinate pairs are interpreted as parameter(s) for implicit absolute smooth cubic Bézier curve (S) commands.
-       * 
+       * Draw a smooth cubic Bézier curve from the current point to the end
+       * point specified by x,y. The end control point is specified by x2,y2.
+       * The start control point is a reflection of the end control point of the
+       * previous curve command. If the previous command wasn't a curve, the
+       * start control point is the same as the curve starting point (current
+       * point). Any subsequent pair(s) of coordinate pairs are interpreted as
+       * parameter(s) for implicit absolute smooth cubic Bézier curve (S)
+       * commands.
        */
       case 'S': // (x2,y2, x,y)+
         position = Vector2(...arg.get(0).toArray());
 
-        return nextControl(current, position, ControlCubic(current.position, arg, [
+        return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
@@ -243,12 +202,44 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         ]));
 
       /**
-       * Draw a cubic Bézier curve from the current point to the end point specified by x,y. The start control point is specified by x1,y1 and the end control point is specified by x2,y2. Any subsequent triplet(s) of coordinate pairs are interpreted as parameter(s) for implicit absolute cubic Bézier curve (C) command(s). Formulae: Po' = Pn = {x, y} ; Pcs = {x1, y1} ; Pce = {x2, y2}
+       * Draw a smooth cubic Bézier curve from the current point to the end
+       * point, which is the current point shifted by dx along the x-axis and dy
+       * along the y-axis. The end control point is the current point (starting
+       * point of the curve) shifted by dx2 along the x-axis and dy2 along the
+       * y-axis. The start control point is a reflection of the end control
+       * point of the previous curve command. If the previous command wasn't a
+       * curve, the start control point is the same as the curve starting point
+       * (current point). Any subsequent pair(s) of coordinate pairs are
+       * interpreted as parameter(s) for implicit relative smooth cubic Bézier
+       * curve (s) commands.
+       */
+      case 's': // (x2,y2, x,y)+
+        position = Vector2(...arg.get(0).toArray()).add(current.position);
+        absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y))
+
+        return nextControl(current, position, StandardControls(current.position, absArg, base, [
+          (host, event) => {
+            const pos = SVGCoords(host, event); 
+            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
+          },
+          (host, event) => {
+            const pos = SVGCoords(host, event); 
+            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).getValue()));
+          }
+        ]));
+
+      /**
+       * Draw a cubic Bézier curve from the current point to the end point
+       * specified by x,y. The start control point is specified by x1,y1 and the
+       * end control point is specified by x2,y2. Any subsequent triplet(s) of
+       * coordinate pairs are interpreted as parameter(s) for implicit absolute
+       * cubic Bézier curve (C) command(s). Formulae: Po' = Pn = {x, y} ; Pcs =
+       * {x1, y1} ; Pce = {x2, y2}
        */
       case 'C': // (x1,y1, x2,y2, x,y)+
         position = Vector2(...arg.get(-1).toArray());
 
-        return nextControl(current, position, ControlCubic(current.position, arg, [
+        return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
@@ -263,33 +254,23 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
           }
         ]));
 
-
       /**
-       * Draw a smooth cubic Bézier curve from the current point to the end point, which is the current point shifted by dx along the x-axis and dy along the y-axis. The end control point is the current point (starting point of the curve) shifted by dx2 along the x-axis and dy2 along the y-axis. The start control point is a reflection of the end control point of the previous curve command. If the previous command wasn't a curve, the start control point is the same as the curve starting point (current point). Any subsequent pair(s) of coordinate pairs are interpreted as parameter(s) for implicit relative smooth cubic Bézier curve (s) commands.
-       */
-      case 's': // (x2,y2, x,y)+
-        position = Vector2(...arg.get(0).toArray()).add(current.position);
-        absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y))
-
-        return nextControl(current, position, ControlCubic(current.position, absArg, [
-          (host, event) => {
-            const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
-          },
-          (host, event) => {
-            const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).getValue()));
-          }
-        ]));
-
-      /**
-       * Draw a cubic Bézier curve from the current point to the end point, which is the current point shifted by dx along the x-axis and dy along the y-axis. The start control point is the current point (starting point of the curve) shifted by dx1 along the x-axis and dy1 along the y-axis. The end control point is the current point (starting point of the curve) shifted by dx2 along the x-axis and dy2 along the y-axis. Any subsequent triplet(s) of coordinate pairs are interpreted as parameter(s) for implicit relative cubic Bézier curve (c) command(s). Formulae: Po' = Pn = {xo + dx, yo + dy} ; Pcs = {xo + dx1, yo + dy1} ; Pce = {xo + dx2, yo + dy2}
+       * Draw a cubic Bézier curve from the current point to the end point,
+       * which is the current point shifted by dx along the x-axis and dy along
+       * the y-axis. The start control point is the current point (starting
+       * point of the curve) shifted by dx1 along the x-axis and dy1 along the
+       * y-axis. The end control point is the current point (starting point of
+       * the curve) shifted by dx2 along the x-axis and dy2 along the y-axis.
+       * Any subsequent triplet(s) of coordinate pairs are interpreted as
+       * parameter(s) for implicit relative cubic Bézier curve (c) command(s).
+       * Formulae: Po' = Pn = {xo + dx, yo + dy} ; Pcs = {xo + dx1, yo + dy1} ;
+       * Pce = {xo + dx2, yo + dy2}
        */
       case 'c': // (dx1,dy1, dx2,dy2, dx,dy)+
         position = Vector2(...arg.get(-1).toArray()).add(current.position);
         absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y))
 
-        return nextControl(current, position, ControlCubic(current.position, absArg, [
+        return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
@@ -307,7 +288,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
       case 'Q':
         position = Vector2(...arg.get(-1).toArray());
 
-        return nextControl(current, position, ControlCubic(current.position, arg, [
+        return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
@@ -320,9 +301,9 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
 
       case 'q':
         position = Vector2(...arg.get(-1).toArray()).add(current.position);
-        absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y))
+        absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y));
 
-        return nextControl(current, position, ControlCubic(current.position, absArg, [
+        return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
@@ -336,7 +317,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
       case 'T':
         position = Vector2(...arg.get(-1).toArray());
 
-        return nextControl(current, position, ControlCubic(current.position, arg, [
+        return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
@@ -347,7 +328,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         position = Vector2(...arg.get(-1).toArray()).add(current.position);
         absArg = arg.map(a => List.of(a.get(0) + current.position.x, a.get(1) + current.position.y))
 
-        return nextControl(current, position, ControlCubic(current.position, absArg, [
+        return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
             host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
@@ -357,7 +338,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
       case 'A':
         position = Vector2(...arg.get(-1).toArray());
 
-        return nextControl(current, position, ControlArc(current.position, arg, {
+        return nextControl(current, position, ArcControls(current.position, arg, {
           rxry: (host, event) => {
             const pos = SVGCoords(host, event).subtract(current.position); 
             host.paths = host.paths.setIn([...base, 0, 0], pos.x) ;
@@ -392,27 +373,22 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
   elements: []
 }).elements;
 
-// if (~'MmLlHhVv'.indexOf(command)) {
-//   const x = args.map(arg => Point(Vector2(0, 0), arg, {
-//     mousedown: (host, event) => host.selectedControl = event.target
-//   }));
-//   console.log(x);
-//   return x;
-// }
+const dragHandler = (handler, pathLookup) => (host) => {
+  host.activePath = pathLookup;
+  host.drag = handler;
+};
 
-// onmousedown='${(host) => dispatch(host, 'drag', handler.drag )}'
-const controlMoveTo = (x, y, handlers) => svg`
-  <g class='handles'>
-    <circle cx='${x}' cy='${y}' r='${3}'
-      onmousedown='${host => host.drag = handlers.drag}'
-    />
-  </g>`;
-
-// Control element for 
-const ControlCubic = (pos, arg, handlers) => svg`
+/**
+ * Constructor for standard path controls, suitable for most Path control point
+ * 
+ * @param {Vector2} pos 
+ * @param {List} arg 
+ * @param {function[]} handlers 
+ */
+const StandardControls = (pos, arg, pathLookup, handlers) => svg`
   <g class='handles'>${arg.map((a, i) => svg`
     <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${3}'
-      onmousedown='${host => host.drag = handlers[i]}'/>
+      onmousedown='${dragHandler(handlers[i], pathLookup)}'/>
       ${i === arg.size-2 && svg`
         <line x1='${a.get(0)}' y1='${a.get(1)}' x2='${arg.getIn([-1,0])}' y2='${arg.getIn([-1,1])}' />
       `}
@@ -423,37 +399,36 @@ const ControlCubic = (pos, arg, handlers) => svg`
     `}
   </g>`;
 
-const ControlArc = (pos, arg, handlers) => svg`
+/**
+ * Constructor for Arc-command path controls
+ * 
+ * @param {Vector2} pos 
+ * @param {List} arg 
+ * @param {object} handlers 
+ */
+const ArcControls = (pos, arg, handlers) => svg`
   <g class='handles'>  
     
     <!-- Angle control -->
     <path d='${Utils.describeArc(pos.x, pos.y, 13, 14, 0, 359.99)}'
-      class='outer' onmousedown='${host => host.drag = handlers.angle}' />  
+      class='outer' onmousedown='${dragHandler(handlers.angle)}' />  
     <path d='${Utils.describeArc(pos.x, pos.y, 15, 10, 0, arg.getIn([2,0]))}'
-      class='inner' onmousedown='${host => host.drag = handlers.angle}' />              
+      class='inner' onmousedown='${dragHandler(handlers.angle)}' />              
     
-    <!-- Radius-X, Radius-Y controls -->
+    <!-- Radius-X, radius-Y controls -->
     <circle cx='${arg.getIn([0,0])+pos.x}' cy='${arg.getIn([1,0])+pos.y}' r='${3}'
-      onmousedown='${host => host.drag = handlers.rxry}'/>
+      onmousedown='${dragHandler(handlers.rxry)}'/>
     <line x1='${arg.getIn([0,0])+pos.x}' y1='${arg.getIn([1,0])+pos.y}'
       x2='${pos.x}' y2='${pos.y}' />
     
-    <!-- Flags -->
+    <!-- Boolean Flags: Large arc and sweep -->
     <circle cx='${pos.x+15}' cy='${pos.y}' r='${3}'
       onclick='${handlers.largeArc}' class="${arg.getIn([3,0]) ? 'active' : 'a'}"/>
-    
     <circle cx='${pos.x+30}' cy='${pos.y}' r='${3}'
       onclick='${handlers.sweep}' class="${arg.getIn([4,0]) ? 'active' : 'a'}"/>
 
     <!-- End point -->
     <circle cx='${arg.getIn([5,0])}' cy='${arg.getIn([5,1])}' r='${3}'
-      onmousedown='${host => host.drag = handlers.end}'/>  
+      onmousedown='${dragHandler(handlers.end)}'/>  
   
   </g>`;
-
-// const controlMoveToRelative = (x, y, offset, handlers) => svg`
-//   <g class='handles'>
-//     <circle cx='${offset.x + x}' cy='${offset.y + y}' r='${5}'
-//       onmousedown='${host => host.drag = handlers.drag}'
-//     />
-//   </g>`;

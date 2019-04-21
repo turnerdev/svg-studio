@@ -13,16 +13,14 @@ $spacing: 0.75rem;
 :host([scrollable]) {
     overflow: none;
     .body {
-        overflow-y: scroll;
+        overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(230,230,255,0.1) transparent;
         height: 0;
         &::-webkit-scrollbar-track  {
             background-color: transparent;
         }
-        
         &::-webkit-scrollbar-thumb {
-            // height: 30px;
             background-color: rgba(0,0,0,0.2);
         }
     }

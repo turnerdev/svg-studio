@@ -31,6 +31,6 @@ export default {
         't': { name: 'Relative Quadratic Bézier Curve To' },
         'A': { name: 'Elliptical Arc' },
         'a': { name: 'Relative Elliptical Arc' },
-        'Z': { name: 'Cloth Path' }
+        'Z': { name: 'Close Path' }
     }
 };
