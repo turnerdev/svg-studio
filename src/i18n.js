@@ -1,14 +1,24 @@
+/**
+ * Internationalization module
+ * @module i18n
+ */
+
 import { fromJS } from 'immutable';
 
-const labels = fromJS({
-    settings: {
-    }
-});
+import en from './resources/en.json'
+
+/**
+ * @type {Map} 
+ * @private
+ */
+const labels = fromJS(en);
 
 /**
  * Default behaviour for missing labels
  * Convert from camelCase to Title Case
- * @param {*} key 
+ * @private
+ * @param {string} key
+ * @return {string} key converted to title case
  */
 const defaultLabel = (key) => key
   .replace(/([A-Z])/g, (match) => ` ${match}`)

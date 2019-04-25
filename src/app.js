@@ -1,14 +1,16 @@
+// Project modules
 import { fromJS } from 'immutable';
 import { html, define, property, svg } from 'hybrids';
 // import "babel-polyfill"
 
+// Local modules
+import { ControlFactory } from './control-factory.js';
+import { Label as t } from './i18n.js';
+import { Path, getShape } from './path.js';
 import { ButtonState } from './ui';
 
-import { ControlFactory } from './control-factory.js';
-import { Path, getShape } from './path.js';
-import { Label } from './label.js';
-import config from './config.js';
-
+// Resources
+import config from './config.json';
 import styles from './app.scss';
 
 const SVGPath = (path) => svg`
@@ -48,16 +50,12 @@ const updateSetting = (host, key, value) => {
   host.config = host.config.setIn(['settings', key], JSON.parse(value) || value);
 }
 
+const focusControl = (host, event) => {
+  event.target.scrollIntoView({ behavior: 'smooth' });
+}
+
 export const AppMain = {
-  activePath: {
-    set: (host, value) => {
-      return value;
-    },
-    connect: (host) => {
-      host.activePath = [];
-      return () => {};
-    }
-  },
+  activePath: [],
   config: property(fromJS(config)),
   paths: property(fromJS([
     // Path(250, 250, 'M1,1 50,90 100,100 Z', 'Demo path'),
@@ -102,7 +100,7 @@ export const AppMain = {
       <!-- Config panel -->
       <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Config' icon='settings' scrollable>
         ${config.get('settings').mapKeys((key, value) => html`
-          <ui-control key='${key}' value='${value}' label='${Label('settings', key)}'
+          <ui-control key='${key}' value='${value}' label='${t('settings', key)}'
             onupdate='${(host, event) => updateSetting(host, key, event.detail)}' />
         `).toArray().map(i => i[0])}
       </ui-panel>
@@ -124,8 +122,14 @@ export const AppMain = {
       <!-- Path panel -->
       <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Path' icon='share-2' scrollable>
         ${paths.map((path, pi) => activePath[0] === pi && path.get('d').map((item, ai) => html`
-          <ui-control value='${item.get('args')}' active='${activePath[2] === ai}'>
-            <ui-option selected='${item.get('command')}' options='${config.get('commandOptions').toJS()}' />
+          <ui-control
+              id='path-arg-${ai}'
+              value='${item.get('args')}'
+              active='${activePath[2] === ai}'
+              onactivate='${focusControl}'>
+            <ui-option
+                selected='${item.get('command')}'
+                options='${config.get('commandOptions').toJS()}' />${activePath[2] === ai}
           </ui-control>
         `)).toJS().flat()}
       </ui-panel>

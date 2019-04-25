@@ -14,6 +14,18 @@ const toggleValue = host => {
 }
 
 /**
+ * Dispatch an event to indicate that control has been activated
+ * @param {*} host 
+ */
+const activate = host => {
+  console.log('activating');
+  setImmediate(() => {
+    
+    dispatch(host, 'activate')
+  });
+}
+
+/**
  * Dispatch an event to update a value
  * @param {*} host 
  * @param {*} event 
@@ -23,6 +35,24 @@ const setValue = (host, event) => {
 }
 
 export const UIControl = {
+  active: {
+    set: (host, value, lastValue) => {
+      if (value && lastValue === false) {
+        activate(host);
+      }
+      // TODO: Investigate why attributes aren't bound to descriptors
+      if (value) {
+        host.setAttribute('active', 'active');
+      } else {
+        host.removeAttribute('active');
+      }
+      return value;
+    },
+    connect: (host) => {
+      host.active = false;
+      return () => {};
+    }
+  },
   key: undefined,
   label: undefined,
   editing: false,
