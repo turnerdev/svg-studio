@@ -54,15 +54,6 @@ const updateSetting = (host, key, value) => {
  * @param {*} host 
  * @param {*} event 
  */
-const focusControl = (host, event) => {
-  event.target.scrollIntoView({ behavior: 'smooth' });
-}
-
-/**
- * 
- * @param {*} host 
- * @param {*} event 
- */
 const canvasZoom = (host, event) => {
   const { zoomMax, zoomMin } = host.config.get('canvas').toJS();
   const el = host.shadowRoot.querySelector('svg');
@@ -139,8 +130,7 @@ export const AppMain = {
           <ui-control
               id='path-arg-${ai}'
               value='${item.get('args')}'
-              active='${activePath[2] === ai}'
-              onactivate='${focusControl}'>
+              active='${activePath[2] === ai}'>
             <ui-option
                 selected='${item.get('command')}'
                 options='${config.get('commandOptions').toJS()}' />${activePath[2] === ai}

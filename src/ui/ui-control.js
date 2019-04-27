@@ -1,5 +1,3 @@
-/*eslint-disable no-debugger*/
-
 import { html, define, dispatch } from 'hybrids';
 import { isImmutable } from 'immutable'
 
@@ -17,9 +15,10 @@ const toggleValue = host => {
  * Dispatch an event to indicate that control has been activated
  * @param {*} host 
  */
-const activate = host => {
+const activate = (host) => {
+  // Scroll on next tick to ensure DOM has updated
   setImmediate(() => {
-    dispatch(host, 'activate')
+    host.scrollIntoView({ behavior: 'smooth' });
   });
 }
 
