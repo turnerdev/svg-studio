@@ -2,15 +2,26 @@
     "settings": {
         "gridlines": true,
         "snapToGrid": false,
-        "gridSize": 25
+        "gridSize": 25,
+        "canvasHeight": 500,
+        "canvasWidth": 500
+    },
+    "defaults": {
+        "gridSize": 0.5,
+        "paths": {
+            "Quadratic Bézier Curve": "M 10,50 Q 25,25 40,50 T 70,50 100,50 130,50 160,50 190,50",
+            "R. Quadratic Bézier Curve": "M 250,50 q 15,25 30,0 t 30,0 30,0 30,0 30,0 30,0 30,0 30,0 30,0",
+            "R. Elliptical Arc Curve": "M 300,300 A 6 4 10 1 0 100,100 6 4 10 1 0 400,400"
+
+        }
     },
     "sidebar": {
         "width": "35rem",
         "theme": "dark"
     },
     "canvas": {
-        "width": 500,
-        "height": 500
+        "zoomMin": 1,
+        "zoomMax": 5
     },
     "commandOptions": {
         "M": { "name": "Move To" },

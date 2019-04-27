@@ -3,7 +3,7 @@
  * @module path
  */
 
-import { fromJS } from 'immutable';
+import { svg } from 'hybrids';
 
 /**
  * @private
@@ -17,6 +17,15 @@ const argSize = {
 }
 
 /**
+ * Convert an immutable path object to a 'd' value
+ * @private
+ * @param {Immutable} path Path object
+ * @return {string} Path shape, or 'd' value
+ */
+const getShape = (path) => path.toJS().d.map(c => c.command + c.args.map(arg => arg.join(','))).join(' ');
+
+
+/**
  * Returns the number of parameters for the specified command
  * @private
  * @param {string} command SVG path command 
@@ -28,8 +37,8 @@ const getArgSize = (command) => argSize[Object.keys(argSize).find(key =>
 
 /**
  * Chunks an array into multiple arrays of size n
- * @param {Array.<any>} a
- * @param {number} n 
+ * @param {Array.<any>} a Array to chunk
+ * @param {number} n Maximum size of each chunk
  * @return {Array.<Array.<any>>}
  */
 const chunk = (a, n) => a.length === 0 ? []
@@ -38,11 +47,10 @@ const chunk = (a, n) => a.length === 0 ? []
 /**
  * Return a Path object from the shape of the path
  * @constructor
+ * @param {string} name Name of the path
  * @param {string} d Shape of the path
  */
-export const Path = (x, y, d, name) => fromJS({
-  x: x,
-  y: y,
+export const Path = (name, d) => ({
   visible: true,
   name: name,
   d: d.match(/[a-zA-Z]([^a-zA-Z]*)/g).map(x => ({
@@ -59,8 +67,10 @@ export const Path = (x, y, d, name) => fromJS({
 });
 
 /**
- * Convert an immutable path object to a 'd' value
- * @param {Immutable} path Path object
- * @return {string} Path shape, or 'd' value
+ * Create an SVG path from a Path object
+ * @param {*} path Path object
+ * @return {hybrids} SVG element
  */
-export const getShape = (path) => path.toJS().d.map(c => c.command + c.args.map(arg => arg.join(','))).join(' ');
+export const SVGPath = (path) => svg`
+  <path d='${getShape(path)}' fill='transparent' stroke='black' />
+`;

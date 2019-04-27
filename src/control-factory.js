@@ -11,10 +11,13 @@ import * as Utils from './utils.js';
  * @param {MouseEvent} event 
  */
 const SVGCoords = (host, event) => {
+  const { gridSize, snapToGrid } = host.config.get('settings').toJS();
+  const defaultGridSize = host.config.getIn(['defaults', 'gridSize']);
+  const step = snapToGrid ? gridSize : defaultGridSize;
   const box = host.shadowRoot.querySelector('svg').getBoundingClientRect();
   return Vector2(
-    Utils.clamp(box.left, box.right, event.clientX) - box.left, 
-    Utils.clamp(box.top, box.bottom, event.clientY) - box.top
+    Math.round((Utils.clamp(box.left, box.right, event.clientX) - box.left)/step)*step, 
+    Math.round((Utils.clamp(box.top, box.bottom, event.clientY) - box.top)/step)*step
   );
 }
 
@@ -373,9 +376,10 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
   elements: []
 }).elements;
 
-const dragHandler = (handler, pathLookup) => (host) => {
+const dragHook = (handler, pathLookup) => (host, event) => {
   host.activePath = pathLookup;
   host.drag = handler;
+  event.stopPropagation();
 };
 
 /**
@@ -388,7 +392,7 @@ const dragHandler = (handler, pathLookup) => (host) => {
 const StandardControls = (pos, arg, pathLookup, handlers) => svg`
   <g class='handles'>${arg.map((a, i) => svg`
     <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${3}'
-      onmousedown='${dragHandler(handlers[i], pathLookup)}'/>
+      onmousedown='${dragHook(handlers[i], pathLookup)}'/>
       ${i === arg.size-2 && svg`
         <line x1='${a.get(0)}' y1='${a.get(1)}' x2='${arg.getIn([-1,0])}' y2='${arg.getIn([-1,1])}' />
       `}
@@ -411,13 +415,13 @@ const ArcControls = (pos, arg, handlers) => svg`
     
     <!-- Angle control -->
     <path d='${Utils.describeArc(pos.x, pos.y, 13, 14, 0, 359.99)}'
-      class='outer' onmousedown='${dragHandler(handlers.angle)}' />  
+      class='outer' onmousedown='${dragHook(handlers.angle)}' />  
     <path d='${Utils.describeArc(pos.x, pos.y, 15, 10, 0, arg.getIn([2,0]))}'
-      class='inner' onmousedown='${dragHandler(handlers.angle)}' />              
+      class='inner' onmousedown='${dragHook(handlers.angle)}' />              
     
     <!-- Radius-X, radius-Y controls -->
     <circle cx='${arg.getIn([0,0])+pos.x}' cy='${arg.getIn([1,0])+pos.y}' r='${3}'
-      onmousedown='${dragHandler(handlers.rxry)}'/>
+      onmousedown='${dragHook(handlers.rxry)}'/>
     <line x1='${arg.getIn([0,0])+pos.x}' y1='${arg.getIn([1,0])+pos.y}'
       x2='${pos.x}' y2='${pos.y}' />
     
@@ -429,6 +433,6 @@ const ArcControls = (pos, arg, handlers) => svg`
 
     <!-- End point -->
     <circle cx='${arg.getIn([5,0])}' cy='${arg.getIn([5,1])}' r='${3}'
-      onmousedown='${dragHandler(handlers.end)}'/>  
+      onmousedown='${dragHook(handlers.end)}'/>  
   
   </g>`;

@@ -46,12 +46,9 @@ $text-size: 1.6rem;
 }
 
 ::selection {
-    background: $brand-color; /* WebKit/Blink Browsers */
+    background: $brand-color;
     color: white;
-}
-::-moz-selection {
-    background: $brand-color; /* Gecko Browsers */
-    color: white;
+    padding: 20px;
 }
 
 /**

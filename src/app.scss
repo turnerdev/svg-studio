@@ -6,6 +6,12 @@
     width: 100%;
 }
 
+:host(.dragging) {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
 :host svg g.handles {
     circle {
         fill: white;

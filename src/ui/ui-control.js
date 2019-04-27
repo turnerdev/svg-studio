@@ -18,9 +18,7 @@ const toggleValue = host => {
  * @param {*} host 
  */
 const activate = host => {
-  console.log('activating');
   setImmediate(() => {
-    
     dispatch(host, 'activate')
   });
 }
@@ -34,7 +32,29 @@ const setValue = (host, event) => {
   dispatch(host, 'update', { detail: event.target.value })
 }
 
+/**
+ * Proof of concept for traits
+ */
+// const orderable = {
+//   orderable: {
+//     connect: host => {
+//       const clickTest = (host, event) => {
+//         console.log(host);
+//         console.log(event);
+//         alert('click test');
+//       }
+//       host.addEventListener('click', clickTest);
+//       return () => {
+//         host.removeEventListener('click', clickTest);
+//       }
+//     }
+//   }
+// }
+
+// console.log(orderable);
+
 export const UIControl = {
+  // ...orderable,
   active: {
     set: (host, value, lastValue) => {
       if (value && lastValue === false) {
@@ -55,7 +75,6 @@ export const UIControl = {
   },
   key: undefined,
   label: undefined,
-  editing: false,
   value: undefined,
   update: undefined,
   render: ({ icon, label, value }) => html`
@@ -70,12 +89,11 @@ export const UIControl = {
       </div>
     `}
     ${typeof value === 'number' && html`
-      <div class='number' onclick='${host => host.editing = true}'>
+      <div class='number'>
         <span>${label}</span>
         <input type='number' 
-          onblur='${host => host.editing = false}'
           onload='${(host, event) => event.target.focus()}'
-          onkeyup='${(host, event) => { setValue(host, event); event.KeyCode === 13 && (host.editing = false); }}'
+          onkeyup='${setValue}'
           value='${value}'>
       </div>
     `}

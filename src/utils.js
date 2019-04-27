@@ -33,6 +33,18 @@ export function describeArc(x, y, radius, spread, startAngle, endAngle) {
 }
 
 /**
+ * Key-value map implementation for native JS objects
+ * @example objMap({a: 0, b: 0}, (k, v) => k.charCodeAt(0)) == {a: 97  b: 98}
+ * @param {object} obj Object to map over
+ */
+export function objMap(obj, fn, context) {
+    return Object.keys(obj).reduce((newObj, key) => {
+        newObj[key] = fn.call(context || null, key, obj[key]);
+        return newObj;
+    }, {});
+}
+
+/**
  * Convert polar coordinates to cartesian coordinates
  * @param {number} centerX 
  * @param {number} centerY 
