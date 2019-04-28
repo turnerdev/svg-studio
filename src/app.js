@@ -15,71 +15,97 @@ import config from './config.json';
 import styles from './app.scss';
 
 /**
- * Document mousemove event
- * 
- * @param {MouseEvent} event host.item
- */
-const documentMousemove = (host, event) => {
-  if (host.drag) {
-    host.classList.add('dragging');
-    host.drag(host, event, host.config.getIn(['settings', 'snapToGrid']));
-  }
-};
-
-/**
- * Document mouseup event
- * 
- * @param {MouseEvent} event 
- */
-const documentMouseup = (host) => {
-  if (host.drag) {
-    host.classList.remove('dragging');
-    host.drag = null;
-  }
-}
-
-/**
  * Hook callback for updates to configuration settings
- * 
- * @param {*} host 
- * @param {*} key 
- * @param {*} value 
+ * @param {object} host AppMain
+ * @param {string} key Setting name
+ * @param {any} value New setting value
  */
 const updateSetting = (host, key, value) => {
   host.config = host.config.setIn(['settings', key], JSON.parse(value) || value);
 }
 
 /**
- * 
- * @param {*} host 
- * @param {*} event 
+ * Document mousemove event
+ * @param {object} host AppMain
+ * @param {MouseEvent} event 
+ */
+const documentMousemove = (host, event) => {
+  if (host.drag) {
+    host.drag(host, event, host.config.getIn(['settings', 'snapToGrid']));
+  }
+};
+
+/**
+ * Document mouseup event
+ * @param {object} host AppMain
+ * @param {MouseEvent} event 
+ */
+const documentMouseup = (host) => {
+  if (host.drag) {
+    host.drag = null;
+  }
+}
+
+/**
+ * Mouse move event for dragging
+ * @param {object} host AppMain
+ * @param {MouseEvent} event 
+ */
+const canvasDragging = (host, event, offsetX, offsetY) => {
+  const { scale } = host.svgProperties.toJS();
+
+  host.svgProperties = host.svgProperties.merge({
+    x: Math.round(event.clientX / scale - offsetX),
+    y: Math.round(event.clientY / scale - offsetY)
+  });
+}
+
+/**
+ * Canvas drag event initiated
+ * @param {object} host AppMain
+ * @param {MouseEvent} event 
+ */
+const canvasDragInit = (host, event) => {
+  const { scale, x, y } = host.svgProperties.toJS();
+  const offsetX = event.clientX / scale - x;
+  const offsetY = event.clientY / scale - y;
+
+  host.drag = (host, event) => canvasDragging(host, event, offsetX, offsetY);
+}
+
+/**
+ * Canvas zoom-in event, triggered by mousewheel
+ * @param {object} host AppMain
+ * @param {MouseEvent} event 
  */
 const canvasZoom = (host, event) => {
-  const { zoomMax, zoomMin } = host.config.get('canvas').toJS();
-  const el = host.shadowRoot.querySelector('svg');
-  let scale = (parseFloat(el.dataset.scale) || 1) + (event.deltaY / -10);
-  scale = Math.min(Math.max(zoomMin, scale), zoomMax);
-  el.style.transform = `scale(${scale})`;
-  el.dataset.scale = scale;
+  // Prevent zooming if the user is dragging. Still need to work out issues with
+  // track offset where scale changes are drag start
+  if (!host.drag) {
+    const { zoomMax, zoomMin } = host.config.get('canvas').toJS();
+    host.svgProperties = host.svgProperties.update('scale', scale => Math.min(Math.max(zoomMin, scale + (event.deltaY / -10)), zoomMax));
+  }
   event.preventDefault();
 }
 
 /**
- * 
- * @param {*} host 
- * @param {*} event 
+ * Application root component
  */
-const canvasDrag = (host) => {
-  host.drag = (host, event) => {
-    console.log(event);
-  }
-}
-
 export const AppMain = {
   activePath: [],
   config: property(fromJS(config)),
   paths: property(fromJS(Object.values(Utils.objMap(config.defaults.paths, Path)))),
-  drag: undefined,
+  drag: {
+    set: (host, value) => { 
+      if (value) {
+        host.classList.add('dragging');
+      } else {
+        host.classList.remove('dragging');
+      }
+      return value;
+    }
+  },
+  svgProperties: property(fromJS({x: 0, y: 0, scale: 1})),
   init: {
     connect: host => {
       // Add document-level event listeners
@@ -92,9 +118,12 @@ export const AppMain = {
       }
     }
   },
-  render: ({ activePath, config, paths }) => html`
+  render: ({ activePath, config, paths, svgProperties }) => html`
     <style>
-      svg { background-size: ${config.getIn(['settings','gridSize'])}px ${config.getIn(['settings','gridSize'])}px; }
+      svg.design {
+        background-size: ${config.getIn(['settings','gridSize'])}px ${config.getIn(['settings','gridSize'])}px; 
+        transform: scale(${svgProperties.get('scale')}) translate(${svgProperties.get('x')}px, ${svgProperties.get('y')}px);
+      }
     </style>
     
     <ui-panel theme='${config.getIn(['sidebar','theme'])}' width='${config.getIn(['sidebar','width'])}' class='sidebar'>
@@ -143,7 +172,7 @@ export const AppMain = {
     <ui-tabset>
 
       <ui-tab title='Design' active='${true}' icon='x'>
-        <ui-canvas mode='design' onwheel='${canvasZoom}' onmousedown='${canvasDrag}'>
+        <ui-canvas mode='design' onwheel='${canvasZoom}' onmousedown='${canvasDragInit}'>
           <svg class='design ${config.getIn(['settings','gridlines']) && 'gridlines'}'
                height='${config.getIn(['settings','canvasHeight'])}' 
                width='${config.getIn(['settings','canvasWidth'])}'>

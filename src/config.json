@@ -12,7 +12,6 @@
             "Quadratic Bézier Curve": "M 10,50 Q 25,25 40,50 T 70,50 100,50 130,50 160,50 190,50",
             "R. Quadratic Bézier Curve": "M 250,50 q 15,25 30,0 t 30,0 30,0 30,0 30,0 30,0 30,0 30,0 30,0",
             "R. Elliptical Arc Curve": "M 300,300 A 6 4 10 1 0 100,100 6 4 10 1 0 400,400"
-
         }
     },
     "sidebar": {

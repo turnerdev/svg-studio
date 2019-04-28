@@ -1,3 +1,9 @@
+/**
+ * Control Factory
+ * Generates
+ * @module control-factory
+ */
+
 import { svg } from 'hybrids';
 import { List } from 'immutable';
 
@@ -6,25 +12,33 @@ import * as Utils from './utils.js';
 
 /**
  * Returns coordinates relative to the SVG canvas from a mouse event
- * 
  * @param {hybrids} host 
  * @param {MouseEvent} event 
  */
 const SVGCoords = (host, event) => {
+  const { scale } = host.svgProperties.toJS();
   const { gridSize, snapToGrid } = host.config.get('settings').toJS();
+
   const defaultGridSize = host.config.getIn(['defaults', 'gridSize']);
   const step = snapToGrid ? gridSize : defaultGridSize;
+  
   const box = host.shadowRoot.querySelector('svg').getBoundingClientRect();
+
+  // console.log(`scale: ${scale}, x: ${x}, y: ${y}`);
+  // console.log(`clientX: ${event.clientX}, clientY: ${event.clientY}, boxTop: ${box.top}`);
+  // console.log(`xx: ${xx}, yy: ${yy}`);
+  // console.log(`box: {t: ${box.top}, r: ${box.right}, l: ${box.left} ,b: ${box.bottom}}`)
+  // console.log(`svgx: ${xx-box.left}, svgy: ${yy-box.top}`);
+
   return Vector2(
-    Math.round((Utils.clamp(box.left, box.right, event.clientX) - box.left)/step)*step, 
-    Math.round((Utils.clamp(box.top, box.bottom, event.clientY) - box.top)/step)*step
-  );
+    Math.round(((Utils.clamp(box.left, box.right, event.clientX) - box.left) / scale) / step) * step, 
+    Math.round(((Utils.clamp(box.top, box.bottom, event.clientY) - box.top) / scale) / step) * step
+  ); 
 }
 
 /**
  * Control Factory
  * Returns a list of controls for the provided path
- * 
  * @param {Path} path 
  */
 export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, di) => {
@@ -56,7 +70,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event);
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           }
         ]));
         
@@ -73,7 +87,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event).subtract(current.position);
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           }
         ]));
 
@@ -89,7 +103,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event);
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           }
         ]));
 
@@ -106,7 +120,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event).subtract(current.position);
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           }
         ]));
 
@@ -196,11 +210,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.toArray()));
           }
         ]));
 
@@ -223,11 +237,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).toArray()));
           }
         ]));
 
@@ -245,15 +259,15 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 2], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 2], List(pos.toArray()));
           }
         ]));
 
@@ -276,15 +290,15 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 2], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 2], List(pos.subtract(current.position).toArray()));
           }
         ]));
 
@@ -294,11 +308,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.toArray()));
           }
         ]));
 
@@ -309,11 +323,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).toArray()));
           },
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 1], List(pos.subtract(current.position).toArray()));
           }
         ]));
 
@@ -323,7 +337,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, arg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.toArray()));
           }
         ]));
 
@@ -334,7 +348,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
         return nextControl(current, position, StandardControls(current.position, absArg, base, [
           (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).getValue()));
+            host.paths = host.paths.setIn([...base, 0], List(pos.subtract(current.position).toArray()));
           }
         ]));
       
@@ -359,7 +373,7 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
           },
           end: (host, event) => {
             const pos = SVGCoords(host, event); 
-            host.paths = host.paths.setIn([...base, 5], List(pos.getValue()));
+            host.paths = host.paths.setIn([...base, 5], List(pos.toArray()));
           }
         }));
         
@@ -376,6 +390,11 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
   elements: []
 }).elements;
 
+/**
+ * Hook for initation of drag event
+ * @param {*} handler 
+ * @param {*} pathLookup 
+ */
 const dragHook = (handler, pathLookup) => (host, event) => {
   host.activePath = pathLookup;
   host.drag = handler;
@@ -383,29 +402,28 @@ const dragHook = (handler, pathLookup) => (host, event) => {
 };
 
 /**
- * Constructor for standard path controls, suitable for most Path control point
- * 
+ * Constructor for standard path controls, suitable for most Path command control points
  * @param {Vector2} pos 
  * @param {List} arg 
  * @param {function[]} handlers 
  */
 const StandardControls = (pos, arg, pathLookup, handlers) => svg`
-  <g class='handles'>${arg.map((a, i) => svg`
-    <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${3}'
-      onmousedown='${dragHook(handlers[i], pathLookup)}'/>
-      ${i === arg.size-2 && svg`
-        <line x1='${a.get(0)}' y1='${a.get(1)}' x2='${arg.getIn([-1,0])}' y2='${arg.getIn([-1,1])}' />
-      `}
-    `).toArray()
-    }
+  <g class='handles'>
     ${arg.size === 3 && svg`
       <line x1='${arg.getIn([0,0])}' y1='${arg.getIn([0,1])}' x2='${pos.x}' y2='${pos.y}' />
     `}
+    ${arg.map((a, i) => svg`
+      <circle cx='${a.get(0)}' cy='${a.get(1)}' r='${3}'
+        onmousedown='${dragHook(handlers[i], pathLookup)}'/>
+        ${i === arg.size-2 && svg`
+          <line x1='${a.get(0)}' y1='${a.get(1)}' x2='${arg.getIn([-1,0])}' y2='${arg.getIn([-1,1])}' />
+        `}
+      `).toArray()
+    }
   </g>`;
 
 /**
  * Constructor for Arc-command path controls
- * 
  * @param {Vector2} pos 
  * @param {List} arg 
  * @param {object} handlers 

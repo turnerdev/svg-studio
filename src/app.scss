@@ -34,13 +34,14 @@
     }
 }
 :host svg {
+    transition: transform .1s;
     &.gridlines {
         background-image: linear-gradient(to right, $gridline-color 1px, transparent 1px), linear-gradient(to bottom, $gridline-color 1px, transparent 1px);
     }
     &.design {
         g.handles circle {
             stroke: #FFFFFF30;
-            stroke-width: 1.3rem;
+            stroke-width: 1.2rem;
             fill: white;
         }
         g.handles line {

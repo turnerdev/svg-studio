@@ -145,7 +145,7 @@ Vector2.prototype.getAngle = function(vector) {
  * Returns the value as a float tuple
  * @return {float[]}
  */
-Vector2.prototype.getValue = function(v) {
+Vector2.prototype.toArray = function(v) {
     if (v === 'x' || v === 0) {
         return parseFloat(this.x);
     } else if (v === 'y' || v === 1) {

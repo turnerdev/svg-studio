@@ -5,7 +5,7 @@ import styles from './ui-control.scss';
 
 /**
  * Dispatch an event to invert a boolean value
- * @param {*} host 
+ * @param {object} host UIControl
  */
 const toggleValue = host => {
   dispatch(host, 'update', { detail: !host.value })
@@ -13,7 +13,7 @@ const toggleValue = host => {
 
 /**
  * Dispatch an event to indicate that control has been activated
- * @param {*} host 
+ * @param {object} host UIControl
  */
 const activate = (host) => {
   // Scroll on next tick to ensure DOM has updated
@@ -24,8 +24,8 @@ const activate = (host) => {
 
 /**
  * Dispatch an event to update a value
- * @param {*} host 
- * @param {*} event 
+ * @param {object} host UIControl
+ * @param {Event} event 
  */
 const setValue = (host, event) => {
   dispatch(host, 'update', { detail: event.target.value })
@@ -49,7 +49,6 @@ const setValue = (host, event) => {
 //     }
 //   }
 // }
-
 // console.log(orderable);
 
 export const UIControl = {
@@ -82,18 +81,16 @@ export const UIControl = {
     `}
     ${typeof value === 'boolean' && html`
       <div class='checkbox' onclick='${toggleValue}'>
-        <div class='toggle ${value}'>
-        </div>
+        <div class='toggle ${value}'></div>
         <span>${label}</span>
       </div>
     `}
     ${typeof value === 'number' && html`
       <div class='number'>
         <span>${label}</span>
-        <input type='number' 
-          onload='${(host, event) => event.target.focus()}'
-          onkeyup='${setValue}'
-          value='${value}'>
+        <input type='number' value='${value}'
+            onload='${(host, event) => event.target.focus()}'
+            oninput='${setValue}'>
       </div>
     `}
     <slot></slot>
