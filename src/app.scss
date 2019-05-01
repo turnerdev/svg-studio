@@ -28,11 +28,27 @@
     }
     path.inner {
         fill: $yellow-dark;
+        stroke: none;
     }
     .toggle {
         fill: white;
     }
 }
+
+:host svg g.handles.arc {
+    path.outer,
+    path.inner {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    &:hover {
+        path.outer,
+        path.inner {
+            opacity: 1;
+        }
+    }
+}
+
 :host svg {
     transition: transform .1s;
     &.gridlines {
@@ -47,6 +63,11 @@
         g.handles line {
             stroke: $red-dark;
             stroke-width: 0.2rem;
+        }
+        g.handles line.radius {
+            stroke: $green-dark;
+            stroke-width: 0.4rem;
+            stroke-dasharray: 1;
         }
         path {
             stroke: white;

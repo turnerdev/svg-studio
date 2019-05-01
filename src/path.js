@@ -6,15 +6,14 @@
 import { svg } from 'hybrids';
 
 /**
- * @private
- * @type {object}
+ * Chunks an array into multiple arrays of size n
+ * @todo Move to Util
+ * @param {Array.<any>} a Array to chunk
+ * @param {number} n Maximum size of each chunk
+ * @return {Array.<Array.<any>>}
  */
-const argSize = {
-  'MVLHT': 1,
-  'C': 3,
-  'SQ': 2,
-  'A': 6
-}
+const chunk = (a, n) => a.length === 0 ? []
+  : [a.slice(0, n)].concat(chunk(a.slice(n), n));
 
 /**
  * Convert an immutable path object to a 'd' value
@@ -22,27 +21,22 @@ const argSize = {
  * @param {Immutable} path Path object
  * @return {string} Path shape, or 'd' value
  */
-const getShape = (path) => path.toJS().d.map(c => c.command + c.args.map(arg => arg.join(','))).join(' ');
+const getShape = (path) => path.toJS().d.map(c => c.command + c.args.map(arg => arg.join(' '))).join(' ');
 
+const argFn = {
+  'HV': (data) => chunk(chunk(data, 1), 1),
+  'MLT': (data) => chunk(chunk(data, 2), 1),
+  'C': (data) => chunk(chunk(data, 2), 3),
+  'SQ': (data) => chunk(chunk(data, 2), 2),
+  'A': (data) => chunk(data, 7),
+  'Z': () => []
+}
 
-/**
- * Returns the number of parameters for the specified command
- * @private
- * @param {string} command SVG path command 
- * @return {number} Number of parameters per arguement
- */
-const getArgSize = (command) => argSize[Object.keys(argSize).find(key => 
-  ~key.indexOf(command.toUpperCase())
-)];
-
-/**
- * Chunks an array into multiple arrays of size n
- * @param {Array.<any>} a Array to chunk
- * @param {number} n Maximum size of each chunk
- * @return {Array.<Array.<any>>}
- */
-const chunk = (a, n) => a.length === 0 ? []
-  : [a.slice(0, n)].concat(chunk(a.slice(n), n));
+const parseCommand = (command, parameters) => {
+  return argFn[Object.keys(argFn).find(key => 
+    ~key.indexOf(command.toUpperCase())
+  )](parameters); 
+}
 
 /**
  * Return a Path object from the shape of the path
@@ -55,14 +49,7 @@ export const Path = (name, d) => ({
   name: name,
   d: d.match(/[a-zA-Z]([^a-zA-Z]*)/g).map(x => ({
     command: x[0],
-
-          // String => [[String]]
-          // "1,2, 3,4 10,4 2,4" => [["1,2","3,4"], ["10,4","2,4"]]
-    args: chunk(x.substr(1).split(' ').filter(e => e), getArgSize(x[0])) 
-
-          // [[String]] => [[[Number, Number]]]
-          // [["1,2","3,4"], ["10,4","2,4"]] => [[[1,2],[3,4]], [[10,4],[2,4]]
-          .map(buffer => buffer.map(tuple => tuple.split(',').map(Number))) 
+    args: parseCommand(x[0], x.substr(1).split(/[\s,]+/).filter(e => e !==  '').map(Number))
   }))
 });
 

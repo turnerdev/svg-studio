@@ -9,17 +9,21 @@
     "defaults": {
         "gridSize": 0.5,
         "paths": {
-            "Quadratic Bézier Curve": "M 10,50 Q 25,25 40,50 T 70,50 100,50 130,50 160,50 190,50",
-            "R. Quadratic Bézier Curve": "M 250,50 q 15,25 30,0 t 30,0 30,0 30,0 30,0 30,0 30,0 30,0 30,0",
-            "R. Elliptical Arc Curve": "M 300,300 A 6 4 10 1 0 100,100 6 4 10 1 0 400,400"
+            "Move To & Line To": "M50,250 H100 V300 L50,300 m-25,-25 50,0 h50 v50 h50 50 l0,-100 -100,0",
+            "Cubic Bézier Curve": "M 25,200 C 50,200 50,125 75,125 S100,200 125,200",
+            "R. Cubic Bézier Curve": "M150,200 c25,0 25,-75 50,-75 s25,75 50,75",
+            "Quadratic Bézier Curve": "M 50,50 Q 75,25 100,50 T 150,50 200,50 250,50 300,50 350,50",
+            "R. Quadratic Bézier Curve": "M 50,75 q 25,25 50,0 t 50,0 50,0 50,0 50,0 50,0"         ,   
+            "Elliptical Arc Curve": "M 375,125 A 25,25 0 0 1 425,125 A 25,25 50 0 1 475,125 Q 475,175 425,200 Q 375,175 375,125 z",
+            "R. Elliptical Arc Curve": "M 375,350 a25,25 0 0 1 50,0 a25,25 0 0 1 50,0 q 0,50 -50,75 q-50,-25 -50,-75 Z"
         }
     },
     "sidebar": {
         "width": "35rem",
         "theme": "dark"
     },
-    "canvas": {
-        "zoomMin": 1,
+    "canvas": {   
+        "zoomMin": 0.25,
         "zoomMax": 5
     },
     "commandOptions": {
@@ -41,6 +45,7 @@
         "t": { "name": "Relative Quadratic Bézier Curve To" },
         "A": { "name": "Elliptical Arc" },
         "a": { "name": "Relative Elliptical Arc" },
-        "Z": { "name": "Close Path" }
+        "Z": { "name": "Close Path" },
+        "z": { "name": "Close Path" }
     }
 }

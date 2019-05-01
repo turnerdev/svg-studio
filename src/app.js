@@ -129,7 +129,7 @@ export const AppMain = {
     <ui-panel theme='${config.getIn(['sidebar','theme'])}' width='${config.getIn(['sidebar','width'])}' class='sidebar'>
 
       <div class='logo'>
-        <span>svg</span>stud.io<br>
+        <span>svg</span>stud.io
       </div>
 
       <!-- Config panel -->
@@ -162,7 +162,7 @@ export const AppMain = {
               active='${activePath[2] === ai}'>
             <ui-option
                 selected='${item.get('command')}'
-                options='${config.get('commandOptions').toJS()}' />${activePath[2] === ai}
+                options='${config.get('commandOptions').toJS()}' />
           </ui-control>
         `)).toJS().flat()}
       </ui-panel>

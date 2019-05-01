@@ -25,7 +25,7 @@ export const UIPanel = {
   render: ({ title, icon, width, collapsed }) =>  html`
     <style>
       :host {
-        ${width && 'width: ' + width + ';' }
+        ${width && `min-width: ${width}; max-width: ${width};`}
         ${title && !collapsed && 'flex: 1'}
       }
     </style>
