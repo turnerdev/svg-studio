@@ -83,7 +83,9 @@
 
 pre {
     white-space: pre-line;
-    margin: 20px;
+    margin: $double-spacing;
+    user-select: text;
+    font-size: 1.6rem;
 }
 
 .logo {

@@ -1,6 +1,5 @@
 @import "../theme.scss";
 
-$spacing: 0.75rem;
 
 :host {
     background-color: $light-0;
@@ -9,6 +8,7 @@ $spacing: 0.75rem;
     flex-direction: column;
     position: relative;
     transition: flex .1s;
+    user-select: none;
 }
 
 :host([scrollable]) {
@@ -26,8 +26,6 @@ $spacing: 0.75rem;
         }
     }
 }
-
-
 
 :host .header {
     align-content: center;

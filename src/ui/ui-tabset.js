@@ -6,18 +6,20 @@ import styles from './ui-tabset.scss';
 
 /**
  * Display the specified tab
- * @param {*} host 
- * @param {*} tab 
+ * @param {hybrids} host UITabset
+ * @param {hybrids} tab UITab
  */
 const select = (host, tab) => {
   host.tabs.filter(t => t.active).forEach(t => t.active = false);
-  tab.active = true;
+  tab.active = true; // bad practice?
 };
 
 /**
  * Tab component
  */
 const UITab = Object.assign(UIPanel, {
+  color: 'inherit',
+  backgroundColor: 'inherit',
   render: ({ active }) => !active ? html`<div/>` : html`
     <slot></slot>
   `
@@ -29,11 +31,10 @@ const UITab = Object.assign(UIPanel, {
 export const UITabset = {
   active: ({ tabs }) => tabs.filter(tab => tab.active),
   tabs: children(UITab),
-  render: ({ active, tabs }) => html`
+  render: ({ tabs }) => html`
     <ul>
       ${tabs.map((tab) => html`
-        <li class='${~active.indexOf(tab) && 'active'}'
-            onclick='${host => select(host, tab)}'>
+        <li class='${tab.active && 'active'}' onclick='${host => select(host, tab)}'>
           ${tab.title}
         </li>
       `)}

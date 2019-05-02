@@ -9,18 +9,10 @@ $button-size: 3rem;
 }
 
 :host(:hover) {
-    display: none // Work in progresss
-    li {
-        // display: flex;
-    }
+    display: none;
     .description {
-        // display: block;
         top: $half-spacing;
         transform: translateY(-100%);
-        // background-color: rgba(0, 0, 0, .5);
-    }
-    ul {
-        // background-color: rgba(0, 0, 0, .5);
     }
 }
 
@@ -59,9 +51,6 @@ $button-size: 3rem;
             transition: border .2s linear;
             &:not(:first-of-type) {
                 margin-left: $half-spacing;
-            }
-            &:hover {
-                // border: 1px solid rgba(255,255,255,0.2);
             }
         }
         li.selected {

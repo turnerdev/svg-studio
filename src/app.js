@@ -25,6 +25,16 @@ const updateSetting = (host, key, value) => {
 }
 
 /**
+ * Updates SVG path values at a given path
+ * @param {object} host AppMain
+ * @param {Array.<string>} query Query to path element
+ * @param {any} value New path value
+ */
+const updatePath = (host, query, value) => {
+  host.paths = host.paths.setIn(query, parseFloat(value));
+}
+
+/**
  * Document mousemove event
  * @param {object} host AppMain
  * @param {MouseEvent} event 
@@ -136,7 +146,7 @@ export const AppMain = {
       <ui-panel theme='${config.getIn(['sidebar','theme'])}' title='Config' icon='settings' scrollable>
         ${config.get('settings').mapKeys((key, value) => html`
           <ui-control key='${key}' value='${value}' label='${t('settings', key)}'
-            onupdate='${(host, event) => updateSetting(host, key, event.detail)}' />
+            onupdate='${(host, event) => updateSetting(host, key, event.detail.value)}' />
         `).toArray().map(i => i[0])}
       </ui-panel>
 
@@ -158,7 +168,8 @@ export const AppMain = {
         ${paths.map((path, pi) => activePath[0] === pi && path.get('d').map((item, ai) => html`
           <ui-control
               id='path-arg-${ai}'
-              value='${item.get('args')}'
+              onupdate='${(host, event) => updatePath(host, [pi, 'd', ai, 'args', ...event.detail.key], event.detail.value)}'
+              value='${item.get('args')}']
               active='${activePath[2] === ai}'>
             <ui-option
                 selected='${item.get('command')}'
@@ -184,8 +195,8 @@ export const AppMain = {
 
       <ui-tab title='Render' active='${false}' icon='x'>
         <ui-canvas mode='render'>
-          <svg width='${config.getIn(['settings','canvasWidth'])}'
-               height='${config.getIn(['settings','canvasHeight'])}'
+          <svg height='${config.getIn(['settings','canvasHeight'])}'
+               width='${config.getIn(['settings','canvasWidth'])}'
                class='render'>
             ${paths.map(SVGPath).toArray()}
           </svg>
@@ -194,13 +205,15 @@ export const AppMain = {
 
       <ui-tab title='Markup' active='${false}' icon='x'>
         <pre>
+          &lt;svg height="${config.getIn(['settings','canvasHeight'])}" width="${config.getIn(['settings','canvasWidth'])}" xmlns="http://www.w3.org/2000/svg"&gt;
           ${(() => { 
             return paths.map(SVGPath).toArray().map(x => {
               let fragment = document.createElement('svg');
               x({}, fragment);
-              return fragment.outerHTML;
+              return fragment.innerHTML.trim();
             }).join('\n');
           })()}
+          &lt;/svg&gt;
         </pre>
       </ui-tab>
 

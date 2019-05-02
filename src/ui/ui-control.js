@@ -8,7 +8,7 @@ import styles from './ui-control.scss';
  * @param {object} host UIControl
  */
 const toggleValue = host => {
-  dispatch(host, 'update', { detail: !host.value })
+  dispatch(host, 'update', { detail: { value: !host.value }})
 }
 
 /**
@@ -27,32 +27,11 @@ const activate = (host) => {
  * @param {object} host UIControl
  * @param {Event} event 
  */
-const setValue = (host, event) => {
-  dispatch(host, 'update', { detail: event.target.value })
+const setValue = (host, event, key) => {
+  dispatch(host, 'update', { detail: { value: event.target.value, key: key }})
 }
 
-/**
- * Proof of concept for traits
- */
-// const orderable = {
-//   orderable: {
-//     connect: host => {
-//       const clickTest = (host, event) => {
-//         console.log(host);
-//         console.log(event);
-//         alert('click test');
-//       }
-//       host.addEventListener('click', clickTest);
-//       return () => {
-//         host.removeEventListener('click', clickTest);
-//       }
-//     }
-//   }
-// }
-// console.log(orderable);
-
 export const UIControl = {
-  // ...orderable,
   active: {
     set: (host, value, lastValue) => {
       if (value && lastValue === false) {
@@ -94,7 +73,7 @@ export const UIControl = {
       </div>
     `}
     <slot></slot>
-    ${isImmutable(value) && immutableControl(value)}
+    ${isImmutable(value) && immutableControl(value, [])}
   `.style(styles)
 };
 
@@ -103,22 +82,22 @@ export const UIControl = {
  * @todo Refactor and inline
  * @param {Immutable} value 
  */
-function immutableControl(value) {
+function immutableControl(value, key) {
   if (isImmutable(value)) {
-    return html`<div class='group'>${value.map(immutableControl).toArray()}</div>`;
+    return html`<div class='group'>${value.map((v,i,) => immutableControl(v, [...key, i])).toArray()}</div>`;
   }
-  return getInput(value);
+  return getInput(value, key);
 }
 
 /**
  * Returns an appropriate HTML input element based on an input value
  * @param {*} value 
  */
-function getInput(value) {
+function getInput(value, key) {
   if (typeof value === 'number') {
-    return html`<input type='number' step='any' value='${value}' />`;
+    return html`<input type='number' step='any' value='${value}' oninput='${(host, event) => setValue(host, event, key)}'/>`;
   }
-  return html`<input type='text' value='${value}' />`;
+  return html`<input type='text' value='${value}' oninput='${(host, event) => setValue(host, event, key)}'/>`;
 }
 
-define('ui-control', UIControl);
+define('ui-control', UIControl); 

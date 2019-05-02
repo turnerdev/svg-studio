@@ -161,7 +161,7 @@ function _refacB(previous, args, base, options) {
         <!-- Angle control -->
         <path d='${Utils.describeArc(position.x, position.y, 9, 11, 0, 359.99)}'
           class='outer' onmousedown='${dragHook(handleAngle, base)}' />  
-
+          
         <path d='${Utils.describeArc(position.x, position.y, 10, 9, 0, args.get(2))}'
           class='inner' onmousedown='${dragHook(handleAngle, base)}' />      
 
@@ -173,7 +173,6 @@ function _refacB(previous, args, base, options) {
     `]
   };
 }
-
 
 /**
  * Control Factory
@@ -199,4 +198,4 @@ export const ControlFactory = (path, pi) => path.get('d').reduce((previous, c, d
 }, {
   position: Vector2(0, 0),
   elements: []
-}).elements.reverse(); // Render last first - more convenient for underlaying control lines connecting to previous points
+}).elements.reverse(); // Render last first; userful for underlaying control point guides

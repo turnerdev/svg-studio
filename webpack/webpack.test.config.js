@@ -10,7 +10,6 @@ module.exports = {
   entry: {
     test: path.resolve(__dirname, '../test/tests.js'),
   },
-  devtool: 'inline-source-map',
   devServer: {
     contentBase: './dist'
   },
@@ -23,7 +22,7 @@ module.exports = {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, '..')
   },
   module: {
     rules: [
