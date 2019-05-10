@@ -17,6 +17,3 @@ document.body.appendChild(styles);
 // Injection application
 const app = document.createElement('app-main');
 document.body.appendChild(app);
-
-// Test commit
-

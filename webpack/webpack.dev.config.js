@@ -4,9 +4,13 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const loaders = require('./loaders.js');
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
+  devtool: 'source-map',
   entry: {
     app: './src/index.js'
+  },
+  devServer: {
+    contentBase: './dist'
   },
   plugins: [
     new CleanWebpackPlugin(),
