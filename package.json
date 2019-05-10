@@ -8,7 +8,7 @@
   "scripts": {
     "test": "NODE_ENV=test mocha --reporter=spec --require @babel/register --require test/_setup.js test/**/*-test.js",
     "watch": "webpack -d --config ./webpack/webpack.config.js --watch --display-error-details",
-    "start": "webpack-dev-server --config ./webpack/webpack.config.dev.js --open --display-error-details",
+    "start": "webpack-dev-server --config ./webpack/webpack.dev.config.js --open --display-error-details",
     "build": "webpack -p --config ./webpack/webpack.config.js --display-error-details"
   },
   "babel": {
