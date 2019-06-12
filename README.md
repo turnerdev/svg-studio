@@ -10,3 +10,9 @@ To install and launch dev server:
 npm install
 npm start
 ```
+
+To build with production profile:
+
+```
+npm build
+```
