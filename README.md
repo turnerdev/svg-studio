@@ -1,6 +1,6 @@
-# SVG Editor
+# SVG Studio
 
-SVG Editor built with [Hybrids](https://github.com/hybridsjs/hybrids). Try it
+SVG editor built with web components and [Hybrids](https://github.com/hybridsjs/hybrids). Try it
 live at [svgstud.io](https://svgstud.io/)!
 
 ![svgstud.io screenshot](screenshot.png "svgstud.io screenshot")
