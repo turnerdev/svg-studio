@@ -1,11 +1,14 @@
 # SVG Studio
 
-SVG editor built with web components and [Hybrids](https://github.com/hybridsjs/hybrids). Try it
+SVG editor built with web components and [Hybrids](https://github.com/hybridsjs/hybrids).Try it
 live at [svgstud.io](https://svgstud.io/)!
 
 ![svgstud.io screenshot](screenshot.png "svgstud.io screenshot")
 
-## Usage
+## Getting started
+Instructions for building and running.
+
+### Installation
 
 To install and launch dev server:
 
