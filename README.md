@@ -1,7 +1,7 @@
 # SVG Studio
 
 SVG editor built with web components and [Hybrids](https://github.com/hybridsjs/hybrids).Try it
-live at [svgstud.io](https://svgstud.io/)!
+live at [svgstud.io](https://turnerdev.github.io/svg-studio/)!
 
 ![svgstud.io screenshot](screenshot.png "svgstud.io screenshot")
 
